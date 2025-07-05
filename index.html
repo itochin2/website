@@ -3,36 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Website</title>
+    <title>生活環境と健康 確認問題演習</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             padding: 20px;
-            line-height: 1.6;
         }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 100%;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         h1 {
+            text-align: center;
             color: #333;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        .section {
-            margin: 20px 0;
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .quiz-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .quiz-card:hover::before {
+            left: 100%;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .quiz-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .quiz-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .quiz-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .quiz-description {
+            font-size: 14px;
+            color: #777;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .question-count {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+            
+            .quiz-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .quiz-card {
+                padding: 25px;
+            }
+            
+            .quiz-number {
+                font-size: 36px;
+            }
+            
+            .quiz-title {
+                font-size: 20px;
+            }
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 20px auto 0;
+            min-width: 120px;
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to My Website</h1>
-    
-    <div class="section">
-        <h2>About</h2>
-        <p>������ɃT�C�g�̐������L�ڂ��Ă��������B</p>
+    <div class="container">
+        <h1>生活環境と健康</h1>
+        <p class="subtitle">確認問題演習 - 環境保健学習システム</p>
+        
+        <div class="quiz-grid">
+            <a href="no18.html" class="quiz-card">
+                <div class="quiz-number">18</div>
+                <div class="quiz-title">💧 水環境</div>
+                <div class="quiz-subtitle">Water Environment</div>
+                <div class="quiz-description">
+                    水道水の処理工程、水質基準、消毒方法、下水処理、水質汚濁の環境基準などについて学習します。
+                </div>
+                <div class="question-count">40問</div>
+                <button class="start-button">学習開始</button>
+            </a>
+
+            <a href="no19.html" class="quiz-card">
+                <div class="quiz-number">19</div>
+                <div class="quiz-title">🌪️ 大気環境</div>
+                <div class="quiz-subtitle">Air Environment</div>
+                <div class="quiz-description">
+                    大気汚染物質、環境基準、発生源、測定方法、光化学スモッグ、気象条件などについて学習します。
+                </div>
+                <div class="question-count">20問</div>
+                <button class="start-button">学習開始</button>
+            </a>
+
+            <a href="no20.html" class="quiz-card">
+                <div class="quiz-number">20</div>
+                <div class="quiz-title">🏠 室内環境</div>
+                <div class="quiz-subtitle">Indoor Environment</div>
+                <div class="quiz-description">
+                    室内空気質、温熱環境の測定、シックハウス症候群、受動喫煙対策などについて学習します。
+                </div>
+                <div class="question-count">18問</div>
+                <button class="start-button">学習開始</button>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>📚 各章の○×問題で知識を確認し、AI解説で理解を深めましょう</p>
+            <p>🔄 問題はランダムに出題され、何度でも挑戦できます</p>
+        </div>
     </div>
 
-    <div class="section">
-        <h2>Contact</h2>
-        <p>�A�����񂪂���΋L�ڂ��Ă��������B</p>
-    </div>
+    <script>
+        // カードのクリックイベント
+        document.querySelectorAll('.quiz-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // ボタンがクリックされた場合のデフォルト動作を防ぐ
+                if (e.target.classList.contains('start-button')) {
+                    e.preventDefault();
+                    // カードのhrefに遷移
+                    window.location.href = this.href;
+                }
+            });
+        });
+
+        // ホバーエフェクトの強化
+        document.querySelectorAll('.quiz-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // ページロード時のアニメーション
+        window.addEventListener('load', function() {
+            const cards = document.querySelectorAll('.quiz-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
 </body>
 </html>
