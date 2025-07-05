@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>室内環境 確認問題演習</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .progress {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .question-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .question-number {
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .choices {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .choice-btn:hover {
+            border-color: #6c757d;
+            background: #f8f9fa;
+        }
+        .choice-btn.selected {
+            border-color: #007bff;
+            background: #e7f1ff;
+            color: #007bff;
+        }
+        .choice-btn.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+        .choice-btn.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .explanation {
+            margin-top: 10px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+        .score-board {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .reset-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s ease;
+        }
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>生活環境と健康 確認問題-3<br>20章 室内環境</h1>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="score-board">
+            <div class="score">正解率: <span id="scoreDisplay">0/18 (0%)</span></div>
+            <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuizData = [
+            {q: "アスマン通風乾湿計により，気温と気動を測定することができる。", a: false, e: "気湿", ai: "アスマン通風乾湿計は気温と湿度（気湿）を測定する器具です。乾球温度と湿球温度を測定し、その差から相対湿度を求めます。気動（風速）の測定には別途風速計やカタ温度計が必要です。", goro: "アスマンは「気温・気湿」を測る"},
+            {q: "アスマン通風乾湿計において，乾球温度と湿球温度が同じ室内では，相対湿度が100％である。", a: true, e: "", ai: "湿球温度は水の蒸発潜熱により乾球温度より低くなりますが、空気が水蒸気で飽和している場合（相対湿度100%）は蒸発が起こらないため、乾球温度と湿球温度が同じになります。これは湿度測定の基本原理です。", goro: ""},
+            {q: "カタ温度計は，アルコール温度計の一種で37℃と30℃の目盛りを有する。", a: false, e: "38℃と35℃", ai: "カタ温度計は38℃と35℃の目盛りを持つアルコール温度計で、気動（風速）測定に用いられます。38℃から35℃まで冷却する時間を測定し、冷却速度から風速を求めます。体温に近い温度範囲で測定することがポイントです。", goro: "カタ温度計は「38（さんぱち）から35（さんご）」"},
+            {q: "気動の測定必要な器具は，アスマン通風乾湿計と乾カタ温度計である。", a: true, e: "", ai: "気動（風速）の測定にはアスマン通風乾湿計（気温・湿度測定用）と乾カタ温度計（風速測定用）が必要です。乾カタ温度計は水を付けない状態で使用し、温度の冷却速度から風速を算出します。", goro: ""},
+            {q: "20℃付近では，気温と気湿が同じ場合，気動が大きい部屋の方が感覚温度は高い。", a: false, e: "低い", ai: "気動（風速）が大きいと体表面からの対流による熱放散が促進され、実際の気温より涼しく感じます。これは扇風機の冷却効果と同じ原理で、風があると感覚温度は低下します。特に20℃付近の中程度の温度で顕著です。", goro: ""},
+            {q: "補正感覚温度は，アスマン通風乾湿計，乾カタ温度計，黒球温度計を用いて求めることができる。", a: true, e: "", ai: "補正感覚温度の算出には、気温・湿度（アスマン通風乾湿計）、風速（乾カタ温度計）、輻射熱（黒球温度計）の3要素が必要です。これらを総合して人体が感じる温度感覚を数値化したのが補正感覚温度です。", goro: "補正感覚温度は「アスマン・乾カタ・黒球」の3点セット"},
+            {q: "補正感覚温度では，気温，気湿，気動に加え，蒸散による放熱が人体に与える温度感を示している。", a: false, e: "輻射熱", ai: "補正感覚温度は気温、湿度、風速に加えて輻射熱の影響を考慮した温度指標です。蒸散による放熱は湿度の影響として既に含まれており、第4の要素は壁面や天井からの輻射熱です。黒球温度計で測定されます。", goro: ""},
+            {q: "暑さ指数（湿球黒球温度，WBGT）は，熱中症予防情報の精度を高めるために用いられる。", a: true, e: "", ai: "WBGT（Wet Bulb Globe Temperature）は湿球温度、黒球温度、乾球温度から算出され、熱中症リスクを評価する国際的な指標です。気温だけでなく湿度と輻射熱を考慮するため、熱中症予防により有効な指標として活用されています。", goro: ""},
+            {q: "居住環境の密閉化が，アレルギーの増加に関与している。", a: true, e: "", ai: "住宅の高気密化により室内の換気が不十分になると、ダニやカビ、化学物質などのアレルゲンが蓄積しやすくなります。また、湿度管理も困難になり、これらがアレルギー疾患の増加要因として指摘されています。", goro: ""},
+            {q: "ホルムアルデヒドは，シロアリ駆除剤として用いられ，居室への使用は禁止されている。", a: false, e: "クロルピリホス", ai: "シロアリ駆除剤として使用され居室への使用が禁止されているのはクロルピリホスです。ホルムアルデヒドは建材の接着剤や防腐剤として使用され、シックハウス症候群の主要原因物質の一つですが、シロアリ駆除剤ではありません。", goro: ""},
+            {q: "室内濃度指針値は，室内空気汚染物質によりシックハウス症候群が引き起こされる閾値である。", a: false, e: "指針値：化学的知見に基づき，化学物質に生涯曝露されても，健康影響がないと判断される濃度. 閾値ではない", ai: "室内濃度指針値は「生涯にわたって曝露されても健康影響がないと判断される濃度」であり、シックハウス症候群発症の閾値ではありません。安全性を考慮した予防的な基準値で、指針値以下でも敏感な人には症状が現れる場合があります。", goro: ""},
+            {q: "シックハウス症候群対策として，居室には，換気扇を設置した強制換気が義務づけられている。", a: true, e: "", ai: "建築基準法により、居室には機械換気設備の設置が義務付けられています。24時間換気システムにより常時0.5回/h以上の換気を行うことで、化学物質濃度の低減とシックハウス症候群の予防を図っています。", goro: ""},
+            {q: "石綿（アスベスト）は，大気汚染防止法により特定粉じんに指定され，その使用は禁止されている。", a: true, e: "", ai: "アスベストは発がん性が確認された特定粉じんとして大気汚染防止法で規制され、現在は製造・使用が全面禁止されています。解体工事等では飛散防止対策が厳格に定められ、作業基準の遵守が義務付けられています。", goro: ""},
+            {q: "二酸化炭素は，NaOH・チモールフタレインを用いた検知管法で測定できる。", a: true, e: "", ai: "CO2検知管法では、CO2がNaOH（水酸化ナトリウム）と反応してNa2CO3を生成し、指示薬のチモールフタレインの色変化で濃度を測定します。簡便で迅速な測定が可能なため、室内空気質の評価に広く使用されています。", goro: ""},
+            {q: "タバコの煙にはシアン化水素やアセトアルデヒドが含まれる。", a: true, e: "", ai: "タバコの煙には4000種類以上の化学物質が含まれ、その中にはシアン化水素（猛毒）、アセトアルデヒド（発がん性疑い物質）、ニコチン、タールなど多数の有害物質があります。これらが受動喫煙による健康被害の原因となります。", goro: ""},
+            {q: "喫煙時の発がん性物質は，副流煙に比べ主流煙で著しく高い。", a: false, e: "副流煙の方が高い", ai: "副流煙（タバコの先端から出る煙）は主流煙（喫煙者が吸い込む煙）よりも低温燃焼のため、ベンゾピレンやニトロソアミンなどの発がん性物質の濃度が高くなります。受動喫煙が特に危険視される理由の一つです。", goro: "副流煙の方が「高温でなく低温→有害物質多い」"},
+            {q: "健康増進法では，国や地方公共団体が受動喫煙を防止するための必要な措置を講ずるよう義務付けている。", a: false, e: "努める義務（努力義務）がある", ai: "健康増進法では、国・地方公共団体には受動喫煙防止の「努力義務」が課されており、法的な義務付けではありません。一方、事業者には施設区分に応じた喫煙対策が法的義務として課されています。", goro: ""},
+            {q: "健康増進法では，事業者が喫煙可能室に喫煙可能場所である旨の標識掲示を義務付けている。", a: true, e: "", ai: "改正健康増進法により、喫煙可能室には「喫煙可能」の標識掲示が事業者に義務付けられています。また、20歳未満立入禁止の表示も必要です。これにより利用者が喫煙環境を事前に把握し、受動喫煙を避けることができます。", goro: ""}
+        ];
+
+        let quizData = [];
+        let userAnswers = [];
+
+        // 配列をシャッフルする関数
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // クイズを初期化する関数
+        function initializeQuiz() {
+            quizData = shuffleArray(originalQuizData);
+            userAnswers = new Array(quizData.length).fill(null);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            quizData.forEach((item, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card';
+                questionDiv.innerHTML = `
+                    <div class="question-number">問題 ${index + 1}</div>
+                    <div class="question-text">${item.q}</div>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="selectAnswer(${index}, true)">○</button>
+                        <button class="choice-btn" onclick="selectAnswer(${index}, false)">×</button>
+                    </div>
+                    <div class="result" id="result-${index}"></div>
+                `;
+                container.appendChild(questionDiv);
+            });
+            updateScore();
+        }
+
+        function selectAnswer(questionIndex, userChoice) {
+            if (userAnswers[questionIndex] !== null) return;
+
+            userAnswers[questionIndex] = userChoice;
+            const isCorrect = userChoice === quizData[questionIndex].a;
+            
+            const questionCard = document.querySelectorAll('.question-card')[questionIndex];
+            const buttons = questionCard.querySelectorAll('.choice-btn');
+            const resultDiv = document.getElementById(`result-${questionIndex}`);
+
+            buttons.forEach((btn, btnIndex) => {
+                const btnValue = btnIndex === 0;
+                btn.disabled = true;
+                
+                if (btnValue === userChoice) {
+                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                } else if (btnValue === quizData[questionIndex].a) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            const explanation = quizData[questionIndex].e ? 
+                `<div class="explanation">${quizData[questionIndex].e}</div>` : '';
+            
+            const aiExplanation = quizData[questionIndex].ai ? 
+                `<div class="explanation"><strong>＜AI解説＞</strong><br>${quizData[questionIndex].ai}</div>` : '';
+            
+            const goroExplanation = quizData[questionIndex].goro ? 
+                `<div class="explanation"><strong>＜語呂合わせ＞</strong><br>${quizData[questionIndex].goro}</div>` : '';
+            
+            resultDiv.innerHTML = `
+                ${isCorrect ? '✓ 正解' : '✗ 不正解'}
+                ${explanation}
+                ${aiExplanation}
+                ${goroExplanation}
+            `;
+            resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'} show`;
+
+            updateScore();
+            updateProgress();
+        }
+
+        function updateScore() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const correct = userAnswers.filter((a, i) => a === quizData[i].a).length;
+            const percentage = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+            document.getElementById('scoreDisplay').textContent = `${correct}/${answered} (${percentage}%)`;
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const percentage = (answered / quizData.length) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function resetQuiz() {
+            initializeQuiz();
+            renderQuestions();
+            updateProgress();
+        }
+
+        // 初期化
+        initializeQuiz();
+        renderQuestions();
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大気環境 確認問題演習</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .progress {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .question-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .question-number {
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .choices {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .choice-btn:hover {
+            border-color: #6c757d;
+            background: #f8f9fa;
+        }
+        .choice-btn.selected {
+            border-color: #007bff;
+            background: #e7f1ff;
+            color: #007bff;
+        }
+        .choice-btn.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+        .choice-btn.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .explanation {
+            margin-top: 10px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+        .score-board {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .reset-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s ease;
+        }
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>生活環境と健康 確認問題-2<br>19章 大気環境</h1>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="score-board">
+            <div class="score">正解率: <span id="scoreDisplay">0/20 (0%)</span></div>
+            <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuizData = [
+            {q: "二酸化炭素，アルゴン，メタンのうち自然大気中の濃度が最も高いのは二酸化炭素である。", a: false, e: "アルゴン ＞ CO2 ＞ メタン", ai: "自然大気中の濃度順位は、窒素（約78%）、酸素（約21%）に次いでアルゴン（約0.93%）が3番目に多く、二酸化炭素（約0.04%）、メタン（約0.0002%）の順です。アルゴンは希ガスで化学的に安定なため大気中に蓄積されています。", goro: "大気の順番「窒素、酸素、アルゴン、CO2」"},
+            {q: "二酸化窒素，二酸化硫黄，光化学オキシダントには「大気汚染に係る環境基準」が設定されている。", a: true, e: "", ai: "これら3物質は主要な大気汚染物質として環境基準が設定されています。二酸化窒素と二酸化硫黄は直接的な有害性があり、光化学オキシダントは二次汚染物質として重要です。一酸化炭素、浮遊粒子状物質、微小粒子状物質にも環境基準があります。", goro: ""},
+            {q: "二酸化硫黄の主な発生源は，ガソリンエンジンの自動車排ガスである。", a: false, e: "工場などの固定発生源", ai: "二酸化硫黄の主な発生源は火力発電所や工場などの固定発生源で、硫黄分を含む重油や石炭の燃焼によります。ガソリンは硫黄分が少なく、自動車からの二酸化硫黄排出は限定的です。現在は脱硫技術の普及により大幅に削減されています。", goro: ""},
+            {q: "工場の排煙脱硫装置の普及により，我が国の大気中の二酸化硫黄濃度は顕著に低下した。", a: true, e: "", ai: "1970年代から積極的に導入された排煙脱硫装置により、日本の二酸化硫黄濃度は劇的に改善されました。湿式石灰石膏法などの脱硫技術で除去効率90%以上を達成し、現在の大気中濃度は環境基準を大幅に下回っています。", goro: ""},
+            {q: "硫酸ミストは，二酸化硫黄よりも気道粘膜への刺激が強い。", a: true, e: "", ai: "硫酸ミスト（H2SO4の微粒子）は二酸化硫黄が大気中で酸化・水和して生成され、強酸性のため気道粘膜への刺激が二酸化硫黄より強力です。特に細かい粒子は肺の奥深くまで到達し、より深刻な健康影響を与える可能性があります。", goro: ""},
+            {q: "窒素酸化物の主な発生源は，工場などの固定発生源である。", a: false, e: "高速走行中の自動車などの移動発生源", ai: "窒素酸化物（NOx）の主要発生源は自動車、特に高速走行時のエンジン内高温燃焼です。燃焼温度が高いほど空気中の窒素と酸素が反応してNOxが生成されるため、ディーゼル車や高負荷運転時に多量排出されます。", goro: "NOxは「のっくす（ノックス）＝車」で覚える"},
+            {q: "化石燃料の燃焼で生成する窒素酸化物は，主として空気中の窒素の燃焼に由来する。", a: true, e: "", ai: "燃焼時に生成されるNOxには、燃焼空気中の窒素が高温で酸化される「サーマルNOx」と、燃料中の窒素化合物から生成される「フューエルNOx」があります。一般的な化石燃料燃焼では、高温による空気中窒素の酸化が主要な生成メカニズムです。", goro: ""},
+            {q: "大気中のNOxは，一般的にNO2と比べてNOが多い。", a: false, e: "NOは化学的に不安定なので，大気中のO2と反応し，NO2となる", ai: "発生源から排出される直後はNOが多いですが、大気中ではNOが酸素と反応して安定なNO2に変化するため、一般的な大気中ではNO2の方が多くなります。この反応は比較的速やかに進行し、大気中での窒素酸化物の主要形態はNO2です。", goro: ""},
+            {q: "ザルツマン法では，ザルツマン試薬が一酸化窒素と反応して呈色することを利用している。", a: false, e: "二酸化窒素 NO2", ai: "ザルツマン法は二酸化窒素（NO2）の測定法で、NO2がザルツマン試薬（スルファニルアミドとN-1-ナフチルエチレンジアミン）と反応してアゾ色素を生成し、赤紫色に呈色する反応を利用します。NOは直接反応しないため、予め酸化してNO2にする必要があります。", goro: ""},
+            {q: "光化学オキシダントとは，中性ヨウ化カリウム溶液から遊離するヨウ素により定量する。", a: true, e: "", ai: "光化学オキシダントの測定原理は、オゾンなどの酸化性物質が中性KI溶液からヨウ素を遊離させる反応を利用します。遊離したヨウ素量を滴定や吸光度測定で定量することで、オキシダント濃度を求めます。この方法は簡便で正確性が高いです。", goro: ""},
+            {q: "ペルオキシアシルナイトレート（PAN）は，光化学オキシダントの一種である。", a: true, e: "", ai: "PANは光化学スモッグの主要成分の一つで、アルデヒドとNO2が光化学反応で生成する二次汚染物質です。強い目や気道への刺激作用があり、植物にも被害を与えます。オゾンと並んで光化学オキシダントの代表的な物質です。", goro: ""},
+            {q: "光化学オキシダントは，窒素酸化物と炭化水素から太陽光の作用により生成する。", a: true, e: "", ai: "光化学オキシダントは一次汚染物質（NOxと炭化水素）が太陽光（特に紫外線）により複雑な光化学反応を起こして生成される二次汚染物質です。高温、強い日射、風が弱い条件で発生しやすく、夏季の都市部で問題となります。", goro: "光化学は「のっくす（NOx）、炭化水素、太陽光」の3点セット"},
+            {q: "オゾンとオレフィン類の反応により，ペルオキシラジカルが生成する。", a: true, e: "", ai: "オゾンがオレフィン（不飽和炭化水素）と反応すると、分子が開裂してペルオキシラジカルなどの活性中間体が生成されます。これらのラジカルがさらに反応を続けることで、光化学スモッグの複雑な反応チェーンが進行し、様々な二次汚染物質が生成されます。", goro: ""},
+            {q: "大気中の光化学オキシダントの環境基準達成率は，ほぼ100％であり，着実に減少している。", a: false, e: "数%であり，増加傾向にある", ai: "光化学オキシダントは日本で最も環境基準達成が困難な大気汚染物質で、達成率は数%程度と極めて低く、近年むしろ悪化傾向にあります。前駆物質は減少していますが、オゾンの生成メカニズムが複雑で、広域的な対策が必要です。", goro: ""},
+            {q: "浮遊粒子状物質（SPM）発生は，主にディーゼル車からの排ガスである。", a: true, e: "", ai: "SPM（粒径10μm以下）の主要発生源はディーゼル車の排気微粒子です。ディーゼルエンジンの不完全燃焼により生成される黒煙（主に炭素粒子）が大気中のSPMの大きな割合を占めています。近年はDPFなどの後処理装置により削減が進んでいます。", goro: ""},
+            {q: "微小粒子状物質は，環境基本法では、「粒径が2.5µMより大きい粒子を100%除去した後に残る粒径分布の粒子」と規定されている。", a: false, e: "50%", ai: "PM2.5の定義は「粒径2.5μmで50%カットオフ効率を持つ分粒装置により分離される粒子」です。つまり2.5μmの粒子の50%が除去され、50%が通過する条件で分離された微細粒子を指します。100%カットではありません。", goro: "PM2.5は「にーてんご（2.5）で50%カット」"},
+            {q: "一酸化炭素は無色，無臭，無刺激の気体であるために，中毒を起こしやすい。", a: true, e: "", ai: "一酸化炭素（CO）は感覚器官で検知できない無色・無臭・無刺激の気体のため、知らずに暴露して中毒を起こす危険性が高いです。ヘモグロビンとの親和性が酸素の約200倍強く、少量でも酸素運搬機能を阻害し、致命的になる可能性があります。", goro: "COは「無色・無臭・無刺激」の3無"},
+            {q: "一酸化炭素の連続自動測定には，主に，溶液導電率法が用いられる。", a: false, e: "非分散型赤外線吸収法", ai: "一酸化炭素の連続測定には非分散型赤外線吸収法（NDIR法）が標準的に用いられます。COが特定波長の赤外線を吸収する性質を利用し、連続的かつ高精度な測定が可能です。溶液導電率法は主にSO2やNOxの測定に用いられます。", goro: ""},
+            {q: "実際の大気の気温減率が乾燥断熱減率（0.98℃/100m）よりも大きいとき，大気は不安定となる。", a: true, e: "", ai: "気温減率が乾燥断熱減率より大きい（急激に温度が下がる）場合、上昇した空気塊は周囲より温かく軽いままなので、さらに上昇を続けます。これが大気不安定状態で、対流が活発化し、汚染物質の拡散が促進されます。", goro: ""},
+            {q: "逆転層は，夏の日差しが強く気温が30℃以上に上昇した風の弱い日に発生しやすい。", a: false, e: "冬季で日中よく晴れた日の夜間に，放射性逆転層が発生しやすい", ai: "逆転層は地表が放射冷却により急激に冷える晴天の夜間、特に冬季に発生しやすいです。地表近くの空気が冷やされ、上空より低温になることで逆転層が形成されます。この状態では汚染物質が地表付近に滞留し、大気汚染が悪化します。", goro: "逆転層は「冬の夜、晴天で放射冷却」"}
+        ];
+
+        let quizData = [];
+        let userAnswers = [];
+
+        // 配列をシャッフルする関数
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // クイズを初期化する関数
+        function initializeQuiz() {
+            quizData = shuffleArray(originalQuizData);
+            userAnswers = new Array(quizData.length).fill(null);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            quizData.forEach((item, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card';
+                questionDiv.innerHTML = `
+                    <div class="question-number">問題 ${index + 1}</div>
+                    <div class="question-text">${item.q}</div>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="selectAnswer(${index}, true)">○</button>
+                        <button class="choice-btn" onclick="selectAnswer(${index}, false)">×</button>
+                    </div>
+                    <div class="result" id="result-${index}"></div>
+                `;
+                container.appendChild(questionDiv);
+            });
+            updateScore();
+        }
+
+        function selectAnswer(questionIndex, userChoice) {
+            if (userAnswers[questionIndex] !== null) return;
+
+            userAnswers[questionIndex] = userChoice;
+            const isCorrect = userChoice === quizData[questionIndex].a;
+            
+            const questionCard = document.querySelectorAll('.question-card')[questionIndex];
+            const buttons = questionCard.querySelectorAll('.choice-btn');
+            const resultDiv = document.getElementById(`result-${questionIndex}`);
+
+            buttons.forEach((btn, btnIndex) => {
+                const btnValue = btnIndex === 0;
+                btn.disabled = true;
+                
+                if (btnValue === userChoice) {
+                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                } else if (btnValue === quizData[questionIndex].a) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            const explanation = quizData[questionIndex].e ? 
+                `<div class="explanation">${quizData[questionIndex].e}</div>` : '';
+            
+            const aiExplanation = quizData[questionIndex].ai ? 
+                `<div class="explanation"><strong>＜AI解説＞</strong><br>${quizData[questionIndex].ai}</div>` : '';
+            
+            const goroExplanation = quizData[questionIndex].goro ? 
+                `<div class="explanation"><strong>＜語呂合わせ＞</strong><br>${quizData[questionIndex].goro}</div>` : '';
+            
+            resultDiv.innerHTML = `
+                ${isCorrect ? '✓ 正解' : '✗ 不正解'}
+                ${explanation}
+                ${aiExplanation}
+                ${goroExplanation}
+            `;
+            resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'} show`;
+
+            updateScore();
+            updateProgress();
+        }
+
+        function updateScore() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const correct = userAnswers.filter((a, i) => a === quizData[i].a).length;
+            const percentage = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+            document.getElementById('scoreDisplay').textContent = `${correct}/${answered} (${percentage}%)`;
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const percentage = (answered / quizData.length) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function resetQuiz() {
+            initializeQuiz();
+            renderQuestions();
+            updateProgress();
+        }
+
+        // 初期化
+        initializeQuiz();
+        renderQuestions();
+    </script>
+</body>
+</html>
