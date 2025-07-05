@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>水環境 確認問題演習</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .progress {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .question-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .question-number {
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .choices {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .choice-btn:hover {
+            border-color: #6c757d;
+            background: #f8f9fa;
+        }
+        .choice-btn.selected {
+            border-color: #007bff;
+            background: #e7f1ff;
+            color: #007bff;
+        }
+        .choice-btn.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+        .choice-btn.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .explanation {
+            margin-top: 10px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+        .score-board {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .reset-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s ease;
+        }
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>生活環境と健康 確認問題-1<br>18章 水環境</h1>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="score-board">
+            <div class="score">正解率: <span id="scoreDisplay">0/40 (0%)</span></div>
+            <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuizData = [
+            {q: "井戸水の水質は，水道法により規制される。", a: false, e: "井戸水は水道法の規制対象ではない", ai: "井戸水は個人の管理下にある私的な水源であり、水道法の規制対象は公共の水道事業者が供給する水道水のみです。井戸水の品質管理は所有者の責任となります。"},
+            {q: "水道の水源として多く利用されているのは，地表水よりも地下水である。", a: false, e: "地表水 約75%，地下水 約25%", ai: "日本では河川やダムなどの地表水が水道水源の大部分を占めています。地表水は豊富な水量を確保しやすい一方、地下水は水質が安定している特徴があります。"},
+            {q: "自浄作用を受けやすいのは，地下水よりも地表水である。", a: true, e: "", ai: "地表水は微生物や藻類、光合成による酸素供給など、多様な生物学的・化学的プロセスによる自浄作用が活発です。一方、地下水は酸素や光が限られるため自浄作用は限定的です。"},
+            {q: "一般に，水道水の処理は，沈殿→消毒→ろ過の順で行われている。", a: false, e: "沈殿→ろ過→消毒の順", ai: "正しい水道水処理の流れは、まず沈殿により大きな不純物を除去し、次にろ過で細かい粒子を取り除き、最後に消毒で病原微生物を殺菌します。消毒は最終段階で行い、処理水の安全性を確保します。"},
+            {q: "生物ろ過膜は，急速ろ過の工程で重要な役割を果たしている。", a: false, e: "緩速ろ過", ai: "生物ろ過膜（シュムツデッケ）は緩速ろ過池の砂層表面に形成される生物膜で、微生物による有機物分解と物理的ろ過を行います。急速ろ過では薬品処理が主体となります。"},
+            {q: "緩速ろ過法は，急速ろ過法に比べて広い敷地面積を要する。", a: true, e: "", ai: "緩速ろ過は低速でゆっくりと水を通すため、同じ処理量を得るには急速ろ過より大きな池面積が必要です。しかし薬品を使わず生物作用を利用する環境に優しい処理法です。"},
+            {q: "薬品沈殿には酸化アルミニウムがよく用いられる。", a: false, e: "凝集剤：硫酸アルミニウム，ポリ塩化アルミニウム", ai: "水道水処理の凝集剤として使用されるのは、硫酸アルミニウムやポリ塩化アルミニウム（PAC）です。これらは水中の微細な粒子を凝集させて大きなフロックにし、沈殿除去を容易にします。"},
+            {q: "水道水の塩素消毒は，次亜塩素酸（HClO）の還元作用に基づく。", a: false, e: "酸化作用", ai: "塩素消毒は次亜塩素酸の強い酸化力により、病原微生物の細胞壁や酵素系を破壊して殺菌します。還元作用ではなく酸化作用が消毒の原理です。"},
+            {q: "遊離残留塩素は，結合残留塩素よりも安定性，殺菌力ともに高い。", a: false, e: "遊離残留塩素は，結合残留塩素（クロラミン）と比較して，殺菌力（反応性）は高いが，安定性は低い", ai: "遊離残留塩素は殺菌力が高く即効性がありますが、揮発しやすく不安定です。結合残留塩素（クロラミン）は殺菌力は劣りますが、長時間安定して残留するため配水管網での消毒効果維持に有効です。"},
+            {q: "アンモニアが存在する水に塩素を注入すると，クロラミンを形成する。", a: true, e: "", ai: "アンモニア性窒素と塩素が反応してクロラミン（結合残留塩素）を形成します。この反応は不可避であり、水道水中のアンモニア濃度管理が重要な理由の一つです。"},
+            {q: "塩素処理において，遊離残留塩素が初めて検出されるのに必要な塩素注入量を塩素消費量という。", a: false, e: "遊離残留塩素が初めて検出されるのに必要な塩素注入量→塩素要求量", ai: "塩素要求量は水中の有機物やアンモニアなどと反応して消費される塩素量で、遊離塩素が残留し始める点です。塩素消費量とは異なる概念で、水質管理の重要な指標です。"},
+            {q: "クリプトスポリジウムは，通常の塩素消毒で死滅する。", a: false, e: "死滅しない", ai: "クリプトスポリジウムは原虫の一種で、厚い細胞壁（オーシスト）に守られているため、通常の塩素濃度では死滅しません。紫外線消毒やオゾン処理、または高温処理が有効です。"},
+            {q: "塩素消毒した際に，塩素がフミン質と反応してジェオスミンが産生することがある。", a: false, e: "トリハロメタン", ai: "塩素がフミン質などの有機物と反応して生成されるのはトリハロメタン類です。ジェオスミンは藍藻類が産生するかび臭物質で、塩素との反応生成物ではありません。"},
+            {q: "遊離残留塩素は，DPD試薬と速やかに反応し赤色を呈する。", a: true, e: "", ai: "DPD（N,N-ジエチル-p-フェニレンジアミン）試薬は遊離残留塩素と速やかに反応して赤紫色を呈する比色試薬です。水道水の残留塩素測定に広く用いられています。"},
+            {q: "水道水の水質基準には，かび臭物質に関する項目はない。", a: false, e: "かび臭物質（ジェオスミン，2-メチルイソボルネオール）の基準値はある", ai: "水道水質基準にはかび臭の原因となるジェオスミンと2-メチルイソボルネオール（2-MIB）の基準値が設定されています。これらは微量でも強いかび臭を発するため厳格に管理されています。"},
+            {q: "水道水の残留塩素の基準値は，「遊離残留塩素として0.1mg/L以上および結合残留塩素として0.4mg/L以上であること」とされている。", a: false, e: "いずれかを満たせば良い。「および」ではなく「もしくは」", ai: "残留塩素の基準は「遊離残留塩素0.1mg/L以上」または「結合残留塩素0.4mg/L以上」のいずれかを満たせばよく、両方を同時に満たす必要はありません。実際の水道では主に遊離残留塩素で管理されています。"},
+            {q: "100mL中に8.0mgのCa2+と2.6mgのMg2+を含む水の硬度は約300mg/Lである。", a: true, e: "306.6mg/L ※硬度は1L当たりの値であることに注意", ai: "硬度の計算式は：硬度(mg/L) = Ca²⁺(mg/L)×2.5 + Mg²⁺(mg/L)×4.1です。80×2.5 + 26×4.1 = 200 + 106.6 = 306.6mg/Lとなります。硬度は水の「硬さ」を表す指標です。"},
+            {q: "水道水の総硬度の測定には，滴定法を用いる。", a: true, e: "", ai: "硬度測定にはEDTA滴定法が標準的に用いられます。Ca²⁺とMg²⁺がEDTAと錯体を形成する反応を利用し、指示薬の色変化で終点を判定する定量分析法です。"},
+            {q: "特定酵素基質培地法では，大腸菌のβ-ガラクトシダーゼによるMUGの分解を活用する。", a: false, e: "β-グルクロニダーゼ", ai: "特定酵素基質培地法では、大腸菌特有のβ-グルクロニダーゼがMUG（4-メチルウンベリフェリル-β-D-グルクロニド）を分解して蛍光物質を生成する反応を利用します。"},
+            {q: "全有機炭素（TOC）量は，し尿や下水による汚染の指標になりうる。", a: true, e: "", ai: "TOCは水中の有機物総量を炭素量として表す指標で、し尿や下水に含まれる有機物による汚染度を評価できます。従来のBODやCODより迅速に測定でき、汚染源の特定にも有効です。"},
+            {q: "下水は，生活や事業に起因もしくは付随する廃水および雨水をいう。", a: true, e: "", ai: "下水道法では、下水を「生活排水」「事業場排水」「雨水」の3つに分類しています。これらを総合的に処理することで、都市の衛生環境と水環境の保全を図っています。"},
+            {q: "多くの河川および湖沼の水質汚濁の主な原因は，工場排水である。", a: false, e: "生活排水", ai: "現在の日本では、工場排水の規制強化により産業由来の汚染は大幅に改善され、むしろ生活排水による汚染が主要な問題となっています。特に窒素・リンによる富栄養化の原因として生活排水の影響が大きいです。"},
+            {q: "下水処理における一次処理の目的は，浮遊物質の除去である。", a: true, e: "", ai: "一次処理では沈砂池や最初沈殿池により、下水中の砂や大きな浮遊物質を物理的に除去します。これにより後段の生物処理の効率向上と設備保護を図ります。"},
+            {q: "活性汚泥とは，微生物と水中浮遊物質が凝集した凝集塊（フロック）である。", a: true, e: "", ai: "活性汚泥は細菌、原生動物、後生動物などの微生物群集が有機物や無機物と結合して形成するフロック状の生物凝集体です。このフロックが有機物を分解し、水質浄化を行います。"},
+            {q: "活性汚泥は静置した場合に水中に均一に分散するほうが良い。", a: false, e: "フロックを形成して速やかに沈降したほうが良い", ai: "良好な活性汚泥は適度な大きさのフロックを形成し、静置時に速やかに沈降して上澄み水と分離することが重要です。これにより処理水の水質向上と汚泥の循環利用が可能になります。"},
+            {q: "オキシデーションディッチ法は，好気性微生物と嫌気性微生物を用いた浮遊生物法のひとつである。", a: true, e: "", ai: "オキシデーションディッチ法は円形や楕円形の水路で活性汚泥を循環させる処理法で、エアレーション部では好気性、循環部では嫌気性となり、窒素除去にも効果的です。"},
+            {q: "「人の健康の保護に関する環境基準」の中で「検出されないこと」とされているのは，全シアン，アルキル水銀，PCBの３項目である。", a: true, e: "", ai: "これら3物質は極めて毒性が強く、安全な閾値を設定することが困難なため「検出されないこと」とされています。いずれも環境中での残留性が高く、生物濃縮される特徴があります。"},
+            {q: "水質汚濁が進むと，DO値は上昇する。", a: false, e: "減少する", ai: "水質汚濁により有機物が増加すると、微生物による有機物分解で酸素が消費されDO（溶存酸素）は減少します。DO低下は魚類の生息に深刻な影響を与え、水環境悪化の重要な指標です。"},
+            {q: "BODは，水中の有機物が生物化学的に酸化されるときに消費する酸素量を表す。", a: true, e: "", ai: "BOD（生物化学的酸素要求量）は微生物が有機物を分解する際に必要な酸素量で、水の有機汚濁度を示す代表的な指標です。値が高いほど有機物による汚染が進んでいることを意味します。"},
+            {q: "BODは20℃，5日間に消費されるDO(mg/L)で示される。", a: true, e: "", ai: "BOD₅は標準的な測定条件（20℃、5日間）で微生物が有機物を分解するのに消費する溶存酸素量です。この条件は微生物活動が活発で、かつ実用的な測定期間として国際的に標準化されています。"},
+            {q: "ウインクラー法では，Mn(OH)2がDOによってH2MnO3に酸化される反応を使う。", a: true, e: "", ai: "ウインクラー法は溶存酸素の定量分析法で、Mn²⁺がアルカリ性条件下でDOにより酸化されてMn³⁺になり、これがヨウ化物イオンを酸化してヨウ素を遊離させ、チオ硫酸ナトリウムで滴定します。"},
+            {q: "CODは，水中の無機物の指標として用いられる。", a: false, e: "有機物", ai: "COD（化学的酸素要求量）は水中の有機物を化学的に酸化するのに必要な酸素量で、有機汚濁の指標です。過マンガン酸カリウムや重クロム酸カリウムなどの酸化剤を使用して測定します。"},
+            {q: "湖沼および海域における環境基準には，CODは設定されていない。", a: false, e: "湖沼・海域の環境基準にはCODが設定されている", ai: "日本の環境基準では、河川はBOD、湖沼・海域はCODが設定されています。これは湖沼・海域では流れが緩やかで生物処理よりも化学的処理が適しているためです。"},
+            {q: "CODの測定法のうち，最も高いCOD値が得られることが期待されるのは，酸性高温過マンガン酸法である。", a: false, e: "ニクロム酸法", ai: "重クロム酸法（ニクロム酸法）は最も強力な酸化力を持ち、難分解性有機物も酸化するため最も高いCOD値が得られます。過マンガン酸法は比較的穏やかな酸化条件です。"},
+            {q: "酸性高温過マンガン酸法は，JIS（日本工業規格）に採用されている。", a: true, e: "", ai: "JIS K 0102（工場排水試験方法）において、COD測定法として酸性高温過マンガン酸法が標準化されています。この方法は操作が比較的簡単で再現性が良好です。"},
+            {q: "海域における油汚染の環境基準としてn-ヘキサン抽出物質量が設定されている。", a: true, e: "", ai: "n-ヘキサン抽出物質は油分や脂肪などの疎水性有機物の総量を示し、海域の油汚染の指標として環境基準が設定されています。船舶からの油流出や工場排水による油汚染の監視に用いられます。"},
+            {q: "富栄養化の原因物質である栄養塩類には窒素とリンがある。", a: true, e: "", ai: "窒素とリンは植物プランクトンの成長に必要な主要栄養素で、これらが過剰に供給されると藻類の異常増殖を引き起こし富栄養化が進行します。特にリンが制限因子となることが多いです。"},
+            {q: "富栄養化は，湖沼より河川で発生しやすい。", a: false, e: "湖沼や閉鎖系海域で発生しやすい", ai: "富栄養化は水の滞留時間が長い湖沼や閉鎖性海域で発生しやすく、栄養塩が蓄積されやすい環境で問題となります。河川は流れがあるため栄養塩が流下し、富栄養化は起こりにくいです。"},
+            {q: "富栄養化がおこるとプランクトンが異常に増殖し，魚類に被害を与えることがある。", a: true, e: "", ai: "富栄養化により藻類が大量発生すると、夜間の呼吸や死滅・分解により酸素が消費され貧酸素状態となり、魚類の大量死を引き起こすことがあります。また有毒藻類による直接的な被害もあります。"},
+            {q: "下水道の普及による生活排水対策は，富栄養化の促進につながる。", a: false, e: "防止につながる", ai: "下水道整備により生活排水中の窒素・リンが適切に処理・除去されるため、富栄養化の防止に大きく貢献します。高度処理により栄養塩除去率をさらに向上させることも可能です。"}
+        ];
+
+        let quizData = [];
+        let userAnswers = [];
+
+        // 配列をシャッフルする関数
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // クイズを初期化する関数
+        function initializeQuiz() {
+            quizData = shuffleArray(originalQuizData);
+            userAnswers = new Array(quizData.length).fill(null);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            quizData.forEach((item, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card';
+                questionDiv.innerHTML = `
+                    <div class="question-number">問題 ${index + 1}</div>
+                    <div class="question-text">${item.q}</div>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="selectAnswer(${index}, true)">○</button>
+                        <button class="choice-btn" onclick="selectAnswer(${index}, false)">×</button>
+                    </div>
+                    <div class="result" id="result-${index}"></div>
+                `;
+                container.appendChild(questionDiv);
+            });
+            updateScore();
+        }
+
+        function selectAnswer(questionIndex, userChoice) {
+            if (userAnswers[questionIndex] !== null) return;
+
+            userAnswers[questionIndex] = userChoice;
+            const isCorrect = userChoice === quizData[questionIndex].a;
+            
+            const questionCard = document.querySelectorAll('.question-card')[questionIndex];
+            const buttons = questionCard.querySelectorAll('.choice-btn');
+            const resultDiv = document.getElementById(`result-${questionIndex}`);
+
+            buttons.forEach((btn, btnIndex) => {
+                const btnValue = btnIndex === 0;
+                btn.disabled = true;
+                
+                if (btnValue === userChoice) {
+                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                } else if (btnValue === quizData[questionIndex].a) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            const explanation = quizData[questionIndex].e ? 
+                `<div class="explanation">${quizData[questionIndex].e}</div>` : '';
+            
+            const aiExplanation = quizData[questionIndex].ai ? 
+                `<div class="explanation"><strong>＜AI解説＞</strong><br>${quizData[questionIndex].ai}</div>` : '';
+            
+            resultDiv.innerHTML = `
+                ${isCorrect ? '✓ 正解' : '✗ 不正解'}
+                ${explanation}
+                ${aiExplanation}
+            `;
+            resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'} show`;
+
+            updateScore();
+            updateProgress();
+        }
+
+        function updateScore() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const correct = userAnswers.filter((a, i) => a === quizData[i].a).length;
+            const percentage = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+            document.getElementById('scoreDisplay').textContent = `${correct}/${answered} (${percentage}%)`;
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const percentage = (answered / quizData.length) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function resetQuiz() {
+            initializeQuiz();
+            renderQuestions();
+            updateProgress();
+        }
+
+        // 初期化
+        initializeQuiz();
+        renderQuestions();
+    </script>
+</body>
+</html>
