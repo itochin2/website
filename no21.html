@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>廃棄物 確認問題演習</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .progress {
+            background: #f0f0f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .question-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .question-number {
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .choices {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .choice-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .choice-btn:hover {
+            border-color: #6c757d;
+            background: #f8f9fa;
+        }
+        .choice-btn.selected {
+            border-color: #007bff;
+            background: #e7f1ff;
+            color: #007bff;
+        }
+        .choice-btn.correct {
+            border-color: #28a745;
+            background: #d4edda;
+            color: #155724;
+        }
+        .choice-btn.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .result.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .result.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .explanation {
+            margin-top: 10px;
+            font-weight: normal;
+            line-height: 1.5;
+        }
+        .score-board {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+        }
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .reset-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.2s ease;
+        }
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>生活環境と健康 確認問題-5<br>21章 廃棄物</h1>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="score-board">
+            <div class="score">正解率: <span id="scoreDisplay">0/16 (0%)</span></div>
+            <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+        </div>
+    </div>
+
+    <script>
+        const originalQuizData = [
+            {q: "一般廃棄物には，家庭ごみとし尿があり，市町村はその処理の責任は市町村にある。", a: true, e: "", ai: "一般廃棄物は家庭ごみ（生活系廃棄物）と事業所からの非産業廃棄物から構成され、市町村が処理責任を負います。し尿も一般廃棄物に含まれ、市町村の処理責任です。一般廃棄物処理計画の策定も市町村の義務です。", goro: "一般廃棄物は「市町村」の責任"},
+            {q: "事業活動に伴って生じた廃棄物は，すべて産業廃棄物に区分される。", a: false, e: "産業廃棄物は，事業活動から生じる燃え殻，汚泥，廃プラスチック類などの20種類をいう", ai: "産業廃棄物は事業活動から生じる廃棄物のうち、法定20種類に限定されます。事業所から出ても紙くずや生ごみなど20種類以外のものは事業系一般廃棄物として扱われます。排出業者の責任で処理しますが、区分が異なります。", goro: "産業廃棄物は「法定20種類のみ」"},
+            {q: "産業廃棄物は，排出業者がその処理の責任を負う。", a: true, e: "", ai: "産業廃棄物処理は排出事業者責任が基本原則です。自ら処理するか、許可業者に委託しますが、委託後も最終処分まで責任を負います。不法投棄等の場合は排出事業者に措置命令や費用負担が課される場合があります。", goro: "産業廃棄物は「排出者責任」"},
+            {q: "特別管理廃棄物とは，感染性，爆発性，毒性など，ヒトの健康または生活環境に悪影響を生じるおそれのある廃棄物をいう。", a: true, e: "", ai: "特別管理廃棄物は人の健康や生活環境に深刻な影響を与える可能性のある廃棄物で、通常の廃棄物より厳格な管理が求められます。感染性、爆発性、毒性、腐食性等の性状により指定され、特別な処理基準が適用されます。", goro: ""},
+            {q: "医療機関より廃棄される「血液の付着したガーゼ（未滅菌）」は，特別管理産業廃棄物である。", a: false, e: "「血液の付着した（未滅菌）」→特別管理（感染性），「ガーゼ」→一般廃棄物", ai: "血液付着により特別管理（感染性）廃棄物ですが、ガーゼは繊維くずで一般廃棄物に分類されるため、「特別管理一般廃棄物」となります。素材が産業廃棄物20種類に該当するかどうかで区分が決まります。", goro: "ガーゼは「繊維くず」→一般廃棄物"},
+            {q: "医療機関より廃棄される「血液の付着したゴム手袋（未滅菌）」は，特別管理産業廃棄物である。", a: true, e: "「血液の付着した（未滅菌）」→特別管理（感染性），「ゴム手袋」→産業廃棄物", ai: "血液付着により特別管理（感染性）廃棄物で、ゴム手袋は廃プラスチック類（産業廃棄物20種類の一つ）に該当するため、「特別管理産業廃棄物」となります。", goro: "ゴム手袋は「廃プラスチック類」→産業廃棄物"},
+            {q: "医療機関より廃棄される「薬液の付着した注射針」は，特別管理産業廃棄物である。", a: true, e: "注射針などの鋭利なものは，感染性産業廃棄物として処理される", ai: "注射針は鋭利で感染リスクが高いため感染性産業廃棄物として扱われ、金属くず（産業廃棄物）に該当するため特別管理産業廃棄物です。薬液付着の有無に関わらず、医療機関の注射針は感染性廃棄物として処理されます。", goro: "注射針は「金属くず」→産業廃棄物"},
+            {q: "薬剤師は，医療機関における感染性廃棄物を管理する特別管理産業廃棄物管理責任者になることができる。", a: true, e: "", ai: "特別管理産業廃棄物管理責任者は、医師、薬剤師、臨床検査技師など一定の資格を有する者が就任できます。薬剤師は化学物質の専門知識を有し、感染性廃棄物の適正管理に必要な知識を備えているため資格要件を満たします。", goro: ""},
+            {q: "感染性廃棄物を入れる容器には，容易に識別できるバイオハザードマークを付けることが推奨されている。", a: true, e: "感染性廃棄物を入れる容器にはバイオハザードマークを付けるか，感染性廃棄物であることを明記する必要がある（バイオハザードマークの貼付そのものは義務ではない）", ai: "感染性廃棄物の容器には識別のためバイオハザードマークの表示が推奨されています。法的義務ではありませんが、「感染性廃棄物」と明記するか、バイオハザードマークにより誰もが識別できるようにすることが重要です。", goro: ""},
+            {q: "産業廃棄物の処理は，総排出量の約50％が最終処分されている。", a: false, e: "産業廃棄物の総排出量のうち約50％が再生利用され，約3％が最終処分されている", ai: "産業廃棄物の約50%は再生利用（リサイクル）され、最終処分されるのは約3%程度です。残りは中間処理（焼却、脱水等）により減量化されます。再生利用率の向上により最終処分量は大幅に削減されています。", goro: "産業廃棄物：再生利用50%、最終処分3%"},
+            {q: "我が国の一般廃棄物最終処分場の残余容量と残余年数は，2000年以降減少し続けている。", a: false, e: "残余容量は減少傾向であり，そのため残余年数は増加している", ai: "最終処分場の残余容量は減少していますが、廃棄物の減量化・リサイクル推進により最終処分量も減少しているため、残余年数（現在の処分量での計算）は近年増加傾向にあります。", goro: "残余容量減、でも残余年数増"},
+            {q: "ペットボトルとアルミ缶は、容器包装リサイクル法の対象である。", a: true, e: "", ai: "容器包装リサイクル法は容器包装廃棄物のリサイクルを促進する法律で、ペットボトル、アルミ缶、ガラスびん、紙製・プラスチック製容器包装等が対象です。事業者に再商品化義務、市町村に分別収集義務を課しています。", goro: ""},
+            {q: "産業廃棄物の不適正な処理あるいは不法投棄を防止するため，産業廃棄物の処理を委託する排出業者にはマニフェスト制度の導入による管理が義務づけられている。", a: true, e: "", ai: "マニフェスト制度は産業廃棄物の処理委託時に管理票を交付し、適正処理を確認する制度です。排出事業者は委託業者にマニフェストを交付し、処理完了まで確認する義務があります。不法投棄等の防止に重要な役割を果たしています。", goro: ""},
+            {q: "全ての産業廃棄物について，廃棄物の種類ごとおよび引き渡しごとに委託業者（取集運搬業者，処理業者）にマニフェストを交付しなければならない。", a: true, e: "", ai: "マニフェストは廃棄物の種類別、引き渡し別に交付が義務付けられています。収集運搬業者と処分業者が異なる場合は、それぞれにマニフェストを交付し、各段階での適正処理を確認する仕組みになっています。", goro: "マニフェストは「種類別・引き渡し別」"},
+            {q: "海洋への廃棄物投棄を防止するための国際的対応として、バーゼル条約が締結された。", a: false, e: "ロンドン条約", ai: "海洋投棄防止に関する国際条約はロンドン条約（1972年）です。バーゼル条約（1989年）は有害廃棄物の国境を越える移動を規制する条約です。両条約とも廃棄物関連ですが対象領域が異なります。", goro: "海洋投棄防止は「ロンドン条約」"},
+            {q: "有害廃棄物の国境を越える移動及びその処分規制に関して，ロンドン条約が締結された。", a: false, e: "バーゼル条約", ai: "有害廃棄物の越境移動規制に関する条約はバーゼル条約（1989年）です。先進国から途上国への有害廃棄物輸出を規制し、適正処理を確保することを目的としています。ロンドン条約は海洋投棄防止が目的です。", goro: "越境移動規制は「バーゼル条約」"}
+        ];
+
+        let quizData = [];
+        let userAnswers = [];
+
+        // 配列をシャッフルする関数
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // クイズを初期化する関数
+        function initializeQuiz() {
+            quizData = shuffleArray(originalQuizData);
+            userAnswers = new Array(quizData.length).fill(null);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            quizData.forEach((item, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-card';
+                questionDiv.innerHTML = `
+                    <div class="question-number">問題 ${index + 1}</div>
+                    <div class="question-text">${item.q}</div>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="selectAnswer(${index}, true)">○</button>
+                        <button class="choice-btn" onclick="selectAnswer(${index}, false)">×</button>
+                    </div>
+                    <div class="result" id="result-${index}"></div>
+                `;
+                container.appendChild(questionDiv);
+            });
+            updateScore();
+        }
+
+        function selectAnswer(questionIndex, userChoice) {
+            if (userAnswers[questionIndex] !== null) return;
+
+            userAnswers[questionIndex] = userChoice;
+            const isCorrect = userChoice === quizData[questionIndex].a;
+            
+            const questionCard = document.querySelectorAll('.question-card')[questionIndex];
+            const buttons = questionCard.querySelectorAll('.choice-btn');
+            const resultDiv = document.getElementById(`result-${questionIndex}`);
+
+            buttons.forEach((btn, btnIndex) => {
+                const btnValue = btnIndex === 0;
+                btn.disabled = true;
+                
+                if (btnValue === userChoice) {
+                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+                } else if (btnValue === quizData[questionIndex].a) {
+                    btn.classList.add('correct');
+                }
+            });
+
+            const explanation = quizData[questionIndex].e ? 
+                `<div class="explanation">${quizData[questionIndex].e}</div>` : '';
+            
+            const aiExplanation = quizData[questionIndex].ai ? 
+                `<div class="explanation"><strong>＜AI解説＞</strong><br>${quizData[questionIndex].ai}</div>` : '';
+            
+            const goroExplanation = quizData[questionIndex].goro ? 
+                `<div class="explanation"><strong>＜語呂合わせ＞</strong><br>${quizData[questionIndex].goro}</div>` : '';
+            
+            resultDiv.innerHTML = `
+                ${isCorrect ? '✓ 正解' : '✗ 不正解'}
+                ${explanation}
+                ${aiExplanation}
+                ${goroExplanation}
+            `;
+            resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'} show`;
+
+            updateScore();
+            updateProgress();
+        }
+
+        function updateScore() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const correct = userAnswers.filter((a, i) => a === quizData[i].a).length;
+            const percentage = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+            document.getElementById('scoreDisplay').textContent = `${correct}/${answered} (${percentage}%)`;
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const percentage = (answered / quizData.length) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+        }
+
+        function resetQuiz() {
+            initializeQuiz();
+            renderQuestions();
+            updateProgress();
+        }
+
+        // 初期化
+        initializeQuiz();
+        renderQuestions();
+    </script>
+</body>
+</html>
