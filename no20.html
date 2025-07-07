@@ -4,163 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>室内環境 確認問題演習</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        .progress {
-            background: #f0f0f0;
-            height: 8px;
-            border-radius: 4px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            background: linear-gradient(90deg, #4CAF50, #45a049);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .question-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .question-number {
-            font-weight: bold;
-            color: #6c757d;
-            margin-bottom: 15px;
-        }
-        .question-text {
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .choices {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .choice-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .choice-btn:hover {
-            border-color: #6c757d;
-            background: #f8f9fa;
-        }
-        .choice-btn.selected {
-            border-color: #007bff;
-            background: #e7f1ff;
-            color: #007bff;
-        }
-        .choice-btn.correct {
-            border-color: #28a745;
-            background: #d4edda;
-            color: #155724;
-        }
-        .choice-btn.incorrect {
-            border-color: #dc3545;
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .result {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-        }
-        .result.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .result.correct {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .result.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .explanation {
-            margin-top: 10px;
-            font-weight: normal;
-            line-height: 1.5;
-        }
-        .score-board {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-        }
-        .score {
-            font-size: 24px;
-            font-weight: bold;
-            color: #495057;
-        }
-        .reset-btn {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.2s ease;
-        }
-        .reset-btn:hover {
-            background: #5a6268;
-        }
-    </style>
+    <link rel="stylesheet" href="css/quiz-styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>生活環境と健康 確認問題-3<br>20章 室内環境</h1>
-        <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
+    <!-- 固定ヘッダー -->
+    <div class="fixed-header">
+        <div class="header-content">
+            <a href="index.html" class="home-btn">🏠 ホームへ戻る</a>
+            <h1>生活環境と健康 確認問題-3<br>20章 室内環境</h1>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
-        <div id="questionsContainer"></div>
-        <div class="score-board">
-            <div class="score">正解率: <span id="scoreDisplay">0/18 (0%)</span></div>
-            <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+    </div>
+
+    <div class="container">
+        <div class="quiz-content">
+            <div id="questionsContainer"></div>
+            <div class="score-board">
+                <div class="score">正解率: <span id="scoreDisplay">0/18 (0%)</span></div>
+                <div class="button-container">
+                    <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+                    <button class="retry-btn" onclick="retryIncorrectQuestions()">間違えた問題のみ再出題</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // 問題データ（このファイル固有）
         const originalQuizData = [
             {q: "アスマン通風乾湿計により，気温と気動を測定することができる。", a: false, e: "気湿", ai: "アスマン通風乾湿計は気温と湿度（気湿）を測定する器具です。乾球温度と湿球温度を測定し、その差から相対湿度を求めます。気動（風速）の測定には別途風速計やカタ温度計が必要です。", goro: "アスマンは「気温・気湿」を測る"},
             {q: "アスマン通風乾湿計において，乾球温度と湿球温度が同じ室内では，相対湿度が100％である。", a: true, e: "", ai: "湿球温度は水の蒸発潜熱により乾球温度より低くなりますが、空気が水蒸気で飽和している場合（相対湿度100%）は蒸発が起こらないため、乾球温度と湿球温度が同じになります。これは湿度測定の基本原理です。", goro: ""},
@@ -181,111 +53,7 @@
             {q: "健康増進法では，国や地方公共団体が受動喫煙を防止するための必要な措置を講ずるよう義務付けている。", a: false, e: "努める義務（努力義務）がある", ai: "健康増進法では、国・地方公共団体には受動喫煙防止の「努力義務」が課されており、法的な義務付けではありません。一方、事業者には施設区分に応じた喫煙対策が法的義務として課されています。", goro: ""},
             {q: "健康増進法では，事業者が喫煙可能室に喫煙可能場所である旨の標識掲示を義務付けている。", a: true, e: "", ai: "改正健康増進法により、喫煙可能室には「喫煙可能」の標識掲示が事業者に義務付けられています。また、20歳未満立入禁止の表示も必要です。これにより利用者が喫煙環境を事前に把握し、受動喫煙を避けることができます。", goro: ""}
         ];
-
-        let quizData = [];
-        let userAnswers = [];
-
-        // 配列をシャッフルする関数
-        function shuffleArray(array) {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-            }
-            return newArray;
-        }
-
-        // クイズを初期化する関数
-        function initializeQuiz() {
-            quizData = shuffleArray(originalQuizData);
-            userAnswers = new Array(quizData.length).fill(null);
-        }
-
-        function renderQuestions() {
-            const container = document.getElementById('questionsContainer');
-            container.innerHTML = '';
-
-            quizData.forEach((item, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question-card';
-                questionDiv.innerHTML = `
-                    <div class="question-number">問題 ${index + 1}</div>
-                    <div class="question-text">${item.q}</div>
-                    <div class="choices">
-                        <button class="choice-btn" onclick="selectAnswer(${index}, true)">○</button>
-                        <button class="choice-btn" onclick="selectAnswer(${index}, false)">×</button>
-                    </div>
-                    <div class="result" id="result-${index}"></div>
-                `;
-                container.appendChild(questionDiv);
-            });
-            updateScore();
-        }
-
-        function selectAnswer(questionIndex, userChoice) {
-            if (userAnswers[questionIndex] !== null) return;
-
-            userAnswers[questionIndex] = userChoice;
-            const isCorrect = userChoice === quizData[questionIndex].a;
-            
-            const questionCard = document.querySelectorAll('.question-card')[questionIndex];
-            const buttons = questionCard.querySelectorAll('.choice-btn');
-            const resultDiv = document.getElementById(`result-${questionIndex}`);
-
-            buttons.forEach((btn, btnIndex) => {
-                const btnValue = btnIndex === 0;
-                btn.disabled = true;
-                
-                if (btnValue === userChoice) {
-                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
-                } else if (btnValue === quizData[questionIndex].a) {
-                    btn.classList.add('correct');
-                }
-            });
-
-            const explanation = quizData[questionIndex].e ? 
-                `<div class="explanation">${quizData[questionIndex].e}</div>` : '';
-            
-            const aiExplanation = quizData[questionIndex].ai ? 
-                `<div class="explanation"><strong>＜AI解説＞</strong><br>${quizData[questionIndex].ai}</div>` : '';
-            
-            const goroExplanation = quizData[questionIndex].goro ? 
-                `<div class="explanation"><strong>＜語呂合わせ＞</strong><br>${quizData[questionIndex].goro}</div>` : '';
-            
-            resultDiv.innerHTML = `
-                ${isCorrect ? '✓ 正解' : '✗ 不正解'}
-                ${explanation}
-                ${aiExplanation}
-                ${goroExplanation}
-            `;
-            resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'} show`;
-
-            updateScore();
-            updateProgress();
-        }
-
-        function updateScore() {
-            const answered = userAnswers.filter(a => a !== null).length;
-            const correct = userAnswers.filter((a, i) => a === quizData[i].a).length;
-            const percentage = answered > 0 ? Math.round((correct / answered) * 100) : 0;
-            document.getElementById('scoreDisplay').textContent = `${correct}/${answered} (${percentage}%)`;
-        }
-
-        function updateProgress() {
-            const answered = userAnswers.filter(a => a !== null).length;
-            const percentage = (answered / quizData.length) * 100;
-            document.getElementById('progressBar').style.width = percentage + '%';
-        }
-
-        function resetQuiz() {
-            initializeQuiz();
-            renderQuestions();
-            updateProgress();
-        }
-
-        // 初期化
-        initializeQuiz();
-        renderQuestions();
     </script>
+    <script src="js/quiz-script.js"></script>
 </body>
 </html>
