@@ -4,163 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>水環境 確認問題演習</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 28px;
-        }
-        .progress {
-            background: #f0f0f0;
-            height: 8px;
-            border-radius: 4px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            background: linear-gradient(90deg, #4CAF50, #45a049);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .question-card {
-            background: #f8f9fa;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .question-number {
-            font-weight: bold;
-            color: #6c757d;
-            margin-bottom: 15px;
-        }
-        .question-text {
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .choices {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .choice-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #dee2e6;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .choice-btn:hover {
-            border-color: #6c757d;
-            background: #f8f9fa;
-        }
-        .choice-btn.selected {
-            border-color: #007bff;
-            background: #e7f1ff;
-            color: #007bff;
-        }
-        .choice-btn.correct {
-            border-color: #28a745;
-            background: #d4edda;
-            color: #155724;
-        }
-        .choice-btn.incorrect {
-            border-color: #dc3545;
-            background: #f8d7da;
-            color: #721c24;
-        }
-        .result {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-        }
-        .result.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .result.correct {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .result.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .explanation {
-            margin-top: 10px;
-            font-weight: normal;
-            line-height: 1.5;
-        }
-        .score-board {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-        }
-        .score {
-            font-size: 24px;
-            font-weight: bold;
-            color: #495057;
-        }
-        .reset-btn {
-            margin-top: 20px;
-            padding: 12px 30px;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.2s ease;
-        }
-        .reset-btn:hover {
-            background: #5a6268;
-        }
-    </style>
+    <link rel="stylesheet" href="quiz-styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>生活環境と健康 確認問題-1<br>18章 水環境</h1>
-        <div class="progress">
-            <div class="progress-bar" id="progressBar"></div>
+    <!-- 固定ヘッダー -->
+    <div class="fixed-header">
+        <div class="header-content">
+            <a href="index.html" class="home-btn">🏠 ホームへ戻る</a>
+            <h1>生活環境と健康 確認問題-1<br>18章 水環境</h1>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
-        <div id="questionsContainer"></div>
-        <div class="score-board">
-            <div class="score">正解率: <span id="scoreDisplay">0/40 (0%)</span></div>
-            <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+    </div>
+
+    <div class="container">
+        <div class="quiz-content">
+            <div id="questionsContainer"></div>
+            <div class="score-board">
+                <div class="score">正解率: <span id="scoreDisplay">0/40 (0%)</span></div>
+                <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+            </div>
         </div>
     </div>
 
     <script>
+        // 問題データ（このファイル固有）
         const originalQuizData = [
             {q: "井戸水の水質は，水道法により規制される。", a: false, e: "井戸水は水道法の規制対象ではない", ai: "井戸水は個人の管理下にある私的な水源であり、水道法の規制対象は公共の水道事業者が供給する水道水のみです。井戸水の品質管理は所有者の責任となります。"},
             {q: "水道の水源として多く利用されているのは，地表水よりも地下水である。", a: false, e: "地表水 約75%，地下水 約25%", ai: "日本では河川やダムなどの地表水が水道水源の大部分を占めています。地表水は豊富な水量を確保しやすい一方、地下水は水質が安定している特徴があります。"},
@@ -203,107 +72,7 @@
             {q: "富栄養化がおこるとプランクトンが異常に増殖し，魚類に被害を与えることがある。", a: true, e: "", ai: "富栄養化により藻類が大量発生すると、夜間の呼吸や死滅・分解により酸素が消費され貧酸素状態となり、魚類の大量死を引き起こすことがあります。また有毒藻類による直接的な被害もあります。"},
             {q: "下水道の普及による生活排水対策は，富栄養化の促進につながる。", a: false, e: "防止につながる", ai: "下水道整備により生活排水中の窒素・リンが適切に処理・除去されるため、富栄養化の防止に大きく貢献します。高度処理により栄養塩除去率をさらに向上させることも可能です。"}
         ];
-
-        let quizData = [];
-        let userAnswers = [];
-
-        // 配列をシャッフルする関数
-        function shuffleArray(array) {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-            }
-            return newArray;
-        }
-
-        // クイズを初期化する関数
-        function initializeQuiz() {
-            quizData = shuffleArray(originalQuizData);
-            userAnswers = new Array(quizData.length).fill(null);
-        }
-
-        function renderQuestions() {
-            const container = document.getElementById('questionsContainer');
-            container.innerHTML = '';
-
-            quizData.forEach((item, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question-card';
-                questionDiv.innerHTML = `
-                    <div class="question-number">問題 ${index + 1}</div>
-                    <div class="question-text">${item.q}</div>
-                    <div class="choices">
-                        <button class="choice-btn" onclick="selectAnswer(${index}, true)">○</button>
-                        <button class="choice-btn" onclick="selectAnswer(${index}, false)">×</button>
-                    </div>
-                    <div class="result" id="result-${index}"></div>
-                `;
-                container.appendChild(questionDiv);
-            });
-            updateScore();
-        }
-
-        function selectAnswer(questionIndex, userChoice) {
-            if (userAnswers[questionIndex] !== null) return;
-
-            userAnswers[questionIndex] = userChoice;
-            const isCorrect = userChoice === quizData[questionIndex].a;
-            
-            const questionCard = document.querySelectorAll('.question-card')[questionIndex];
-            const buttons = questionCard.querySelectorAll('.choice-btn');
-            const resultDiv = document.getElementById(`result-${questionIndex}`);
-
-            buttons.forEach((btn, btnIndex) => {
-                const btnValue = btnIndex === 0;
-                btn.disabled = true;
-                
-                if (btnValue === userChoice) {
-                    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
-                } else if (btnValue === quizData[questionIndex].a) {
-                    btn.classList.add('correct');
-                }
-            });
-
-            const explanation = quizData[questionIndex].e ? 
-                `<div class="explanation">${quizData[questionIndex].e}</div>` : '';
-            
-            const aiExplanation = quizData[questionIndex].ai ? 
-                `<div class="explanation"><strong>＜AI解説＞</strong><br>${quizData[questionIndex].ai}</div>` : '';
-            
-            resultDiv.innerHTML = `
-                ${isCorrect ? '✓ 正解' : '✗ 不正解'}
-                ${explanation}
-                ${aiExplanation}
-            `;
-            resultDiv.className = `result ${isCorrect ? 'correct' : 'incorrect'} show`;
-
-            updateScore();
-            updateProgress();
-        }
-
-        function updateScore() {
-            const answered = userAnswers.filter(a => a !== null).length;
-            const correct = userAnswers.filter((a, i) => a === quizData[i].a).length;
-            const percentage = answered > 0 ? Math.round((correct / answered) * 100) : 0;
-            document.getElementById('scoreDisplay').textContent = `${correct}/${answered} (${percentage}%)`;
-        }
-
-        function updateProgress() {
-            const answered = userAnswers.filter(a => a !== null).length;
-            const percentage = (answered / quizData.length) * 100;
-            document.getElementById('progressBar').style.width = percentage + '%';
-        }
-
-        function resetQuiz() {
-            initializeQuiz();
-            renderQuestions();
-            updateProgress();
-        }
-
-        // 初期化
-        initializeQuiz();
-        renderQuestions();
     </script>
+    <script src="quiz-script.js"></script>
 </body>
 </html>
