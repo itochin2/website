@@ -23,7 +23,10 @@
             <div id="questionsContainer"></div>
             <div class="score-board">
                 <div class="score">正解率: <span id="scoreDisplay">0/40 (0%)</span></div>
-                <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+                <div class="button-container">
+                    <button class="reset-btn" onclick="resetQuiz()">問題をシャッフルして再開</button>
+                    <button class="retry-btn" onclick="retryIncorrectQuestions()">間違えた問題のみ再出題</button>
+                </div>
             </div>
         </div>
     </div>
