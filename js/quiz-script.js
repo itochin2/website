@@ -100,6 +100,35 @@ function resetQuiz() {
     updateProgress();
 }
 
+// 間違えた問題のみを再出題する関数
+function retryIncorrectQuestions() {
+    // 間違えた問題のインデックスを取得
+    const incorrectIndices = [];
+    userAnswers.forEach((answer, index) => {
+        if (answer !== null && answer !== quizData[index].a) {
+            incorrectIndices.push(index);
+        }
+    });
+    
+    if (incorrectIndices.length === 0) {
+        alert('間違えた問題がありません！');
+        return;
+    }
+    
+    // 間違えた問題のデータのみを抽出
+    const incorrectQuestions = incorrectIndices.map(index => quizData[index]);
+    
+    // 間違えた問題をシャッフル
+    quizData = shuffleArray(incorrectQuestions);
+    userAnswers = new Array(quizData.length).fill(null);
+    
+    renderQuestions();
+    updateProgress();
+    
+    // メッセージ表示
+    alert(`間違えた${quizData.length}問を再出題します！`);
+}
+
 // 初期化（DOMContentLoadedイベントで実行）
 document.addEventListener('DOMContentLoaded', function() {
     initializeQuiz();
