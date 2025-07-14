@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生活環境と健康 2023年度版 - Web演習システム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .year-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #090979);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .quiz-container {
+            padding: 40px;
+        }
+        
+        .question-card {
+            background: #f8f9fa;
+            border-left: 5px solid #3498db;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .question-number {
+            color: #3498db;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .selection-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: #1976d2;
+        }
+        
+        .options {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e9ecef;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+        }
+        
+        .option.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+        
+        .option.correct {
+            border-color: #27ae60;
+            background: #d5f4e6;
+        }
+        
+        .option.incorrect {
+            border-color: #e74c3c;
+            background: #fdeaea;
+        }
+        
+        .option input[type="checkbox"],
+        .option input[type="radio"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+        
+        .option-text {
+            flex: 1;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            color: white;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(149, 165, 166, 0.4);
+        }
+        
+        .explanation {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            line-height: 1.6;
+            color: #856404;
+        }
+        
+        .explanation h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .score-display {
+            text-align: center;
+            font-size: 1.2em;
+            color: #2c3e50;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .question-info {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .results-summary {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .results-summary h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .score {
+            font-size: 3em;
+            font-weight: bold;
+            color: #3498db;
+            margin: 20px 0;
+        }
+        
+        .feedback {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .quiz-container {
+                padding: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>生活環境と健康</h1>
+            <p>環境科学総合演習システム</p>
+            <div class="year-badge">2023年度版（35問）</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="quiz-container">
+            <div id="quiz-content">
+                <!-- 問題がここに表示されます -->
+            </div>
+            
+            <div class="controls">
+                <div class="score-display">
+                    <span id="currentScore">正解数: 0</span> / <span id="totalQuestions">総問題数: 0</span>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()">前の問題</button>
+                    <div class="question-info">
+                        <span id="questionCounter">問題 1 / 1</span>
+                    </div>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">次の問題</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 2023年度の問題データ
+        const questions = [
+            {
+                id: 1,
+                question: "生態系における栄養物質の流れを表しているのはどれか。１つ選べ。（元問1）",
+                options: [
+                    "分解者 → 生産者 → 消費者",
+                    "生産者 → 分解者 → 消費者", 
+                    "消費者 → 分解者 → 生産者",
+                    "分解者 → 消費者 → 生産者",
+                    "生産者 → 消費者 → 分解者"
+                ],
+                correct: [4],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "生態系における栄養物質の流れは、生産者（植物）が光合成により有機物を作り、一次消費者（草食動物）がそれを食べ、二次消費者（肉食動物）がそれを食べる。最終的に分解者（細菌・菌類）がすべての生物の遺体を分解して栄養素を土壌に戻す。"
+            },
+            {
+                id: 2,
+                question: "一般に，物質のオクタノール／水分配係数と正の相関関係が認められる指標はどれか。２つ選べ。（元問2）",
+                options: [
+                    "水溶性",
+                    "蓄積性",
+                    "濃縮係数",
+                    "難分解性",
+                    "距離移動性"
+                ],
+                correct: [1, 2],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "オクタノール／水分配係数（logP）が大きいほど、物質は脂溶性が高く、生体内に蓄積しやすくなる。また、濃縮係数も高くなる傾向がある。水溶性とは負の相関を示す。"
+            },
+            {
+                id: 3,
+                question: "生物濃縮に関する記述のうち，正しいのはどれか。２つ選べ。（元問3）",
+                options: [
+                    "1-オクタノール／水分配係数は、濃縮係数と負の相関を示す。",
+                    "1-オクタノール／水分配係数が大きい化学物質は，一般に生体内に蓄積しやすい性質を有している。",
+                    "濃縮係数が1を超える場合，その化学物質は生体内に濃縮されやすいと考えられる。",
+                    "直接濃縮の程度は，その化学物質の脂溶性に依存する。",
+                    "環境汚染物質だけで認められ，微量元素などの栄養物質には認められない現象である。"
+                ],
+                correct: [1, 3],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "オクタノール／水分配係数が大きい（脂溶性が高い）化学物質は生体内に蓄積しやすく、直接濃縮の程度は脂溶性に依存する。濃縮係数が1を超えると生体内濃縮が起こりやすいとされる。"
+            },
+            {
+                id: 4,
+                question: "地球環境問題に関する国際的な取り決めとその内容が正しい組み合わせはどれか。２つ選べ。（元問4）",
+                options: [
+                    "ラムサール条約 - 遺伝子組み換え生物の国際取引の取り決め",
+                    "ウィーン条約 - 海洋への廃棄物投棄による海洋汚染の防止",
+                    "バーゼル条約 - 指定された有害廃棄物の国際取引規制",
+                    "カルタヘナ議定書 - 野生動植物の種の国際取引の取り決め",
+                    "パリ協定 - 温室効果ガス排出規制等の新たな国際的枠組み"
+                ],
+                correct: [2, 4],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "バーゼル条約は有害廃棄物の国際取引を規制し、パリ協定は温室効果ガス排出削減の国際的枠組みを定めている。ラムサール条約は湿地保全、カルタヘナ議定書は遺伝子組み換え生物の取り決めである。"
+            },
+            {
+                id: 5,
+                question: "POPs条約の対象となる残留有機汚染物質の性質に該当しないものはどれか。１つ選べ。（元問5）",
+                options: [
+                    "環境内での長距離移動性",
+                    "環境中での難分解性",
+                    "生物体内への高蓄積性",
+                    "人・植物への有害性",
+                    "環境中での非意図的生成性"
+                ],
+                correct: [4],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "POPs（残留有機汚染物質）の特性は、長距離移動性、難分解性、高蓄積性、有害性の4つが基本的な要件。非意図的生成性は必須条件ではない。"
+            },
+            {
+                id: 6,
+                question: "オゾン層破壊作用を有しない物質はどれか。１つ選べ。（元問6）",
+                options: [
+                    "クロロフルオロカーボン",
+                    "パーフルオロカーボン",
+                    "ハロン",
+                    "ハイドロクロロフルオロカーボン",
+                    "臭化メチル"
+                ],
+                correct: [1],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "パーフルオロカーボン（PFC）は塩素を含まないため、オゾン層破壊作用を持たない。他の物質は塩素や臭素を含むためオゾン層を破壊する。"
+            },
+            {
+                id: 7,
+                question: "オゾン層での吸収率が最も高い太陽光線はどれか。１つ選べ。（元問7）",
+                options: [
+                    "UV-A",
+                    "UV-B", 
+                    "UV-C",
+                    "可視光線",
+                    "赤外線"
+                ],
+                correct: [2],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "オゾン層は特にUV-C（波長200-280nm）を最も強く吸収する。UV-Bも吸収するが、UV-Cほどではない。UV-Aはほとんど吸収されない。"
+            },
+            {
+                id: 8,
+                question: "温室効果ガスが吸収し，地球温暖化に寄与するのはどれか。１つ選べ。（元問8）",
+                options: [
+                    "UV-A",
+                    "UV-B",
+                    "UV-C", 
+                    "可視光線",
+                    "赤外線"
+                ],
+                correct: [4],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "温室効果ガスは地表から放射される赤外線（熱放射）を吸収し、再放射することで地球温暖化を引き起こす。"
+            },
+            {
+                id: 9,
+                question: "酸性雨の発生原因として関与が大きいものはどれか。２つ選べ。（元問9）",
+                options: [
+                    "一酸化炭素",
+                    "二酸化炭素",
+                    "窒素酸化物",
+                    "硫黄酸化物",
+                    "光化学オキシダント"
+                ],
+                correct: [2, 3],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "酸性雨の主要原因は窒素酸化物（NOx）と硫黄酸化物（SOx）である。これらが大気中の水分と反応して硝酸や硫酸を生成し、酸性雨となる。"
+            },
+            {
+                id: 10,
+                question: "環境基本法で規定された以下の公害のうち，環境基準が設定されていないのはどれか。１つ選べ。（元問10）",
+                options: [
+                    "大気汚染",
+                    "土壌汚染",
+                    "騒音",
+                    "水質汚濁",
+                    "振動"
+                ],
+                correct: [4],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "環境基準は大気汚染、水質汚濁、土壌汚染、騒音について設定されているが、振動については環境基準が設定されていない。"
+            },
+            {
+                id: 11,
+                question: "近年，最も苦情件数が多い典型七公害はどれか。１つ選べ。（元問11）",
+                options: [
+                    "水質汚濁",
+                    "大気汚染",
+                    "振動",
+                    "悪臭",
+                    "土壌汚染",
+                    "騒音"
+                ],
+                correct: [5],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "近年の公害苦情の統計では、騒音が最も多く、次いで悪臭、大気汚染の順となっている。"
+            },
+            {
+                id: 12,
+                question: "時間帯補正等価騒音レベル（Lden）によって評価される騒音はどれか。１つ選べ。（元問12）",
+                options: [
+                    "自動車騒音",
+                    "新幹線騒音",
+                    "航空機騒音",
+                    "特定工場騒音",
+                    "特定建設作業騒音"
+                ],
+                correct: [2],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "Lden（時間帯補正等価騒音レベル）は、昼間・夕方・夜間の時間帯別に重み付けして評価する指標で、主に航空機騒音の評価に用いられる。"
+            },
+            {
+                id: 13,
+                question: "我が国で起こった公害及び中毒事例とその原因物質の組み合わせのうち，正しいのはどれか。２つ選べ。（元問13）",
+                options: [
+                    "四日市ぜん息 - 窒素酸化物",
+                    "水俣病 - メチル水銀",
+                    "イタイイタイ病 - カドミウム",
+                    "カネミ油症 - ヒ素"
+                ],
+                correct: [1, 2],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "水俣病の原因はメチル水銀、イタイイタイ病の原因はカドミウムである。四日市ぜん息は主に硫黄酸化物、カネミ油症はPCBやダイオキシンが原因。"
+            },
+            {
+                id: 14,
+                question: "我が国の2021年度の上水道普及率に最も近い数値はどれか。１つ選べ。（元問14）",
+                options: [
+                    "29％",
+                    "44％",
+                    "75％",
+                    "81％",
+                    "98％",
+                    "100％"
+                ],
+                correct: [4],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "日本の上水道普及率は2021年度で約98％と非常に高い水準を維持している。"
+            },
+            {
+                id: 15,
+                question: "我が国の水道水の水源として地表水の利用率に最も近い数値はどれか。１つ選べ。（元問15）",
+                options: [
+                    "29％",
+                    "44％",
+                    "75％",
+                    "81％",
+                    "98％",
+                    "100％"
+                ],
+                correct: [3],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "日本の水道水源において、地表水（河川水、湖沼水など）の利用率は約81％で最も高い割合を占めている。"
+            },
+            {
+                id: 16,
+                question: "飲料水の原水に関する記述のうち，正しいのはどれか。２つ選べ。（元問16）",
+                options: [
+                    "地表水は，地下水に比べて遊離炭酸の量が少ない。",
+                    "地表水は，地下水に比べて溶存酸素濃度が高い。",
+                    "地表水は，地下水に比べて硬度が高い。",
+                    "地表水は，地下水に比べて細菌汚染を受けにくい。",
+                    "地表水は，地下水に比べて自浄作用を受けにくい。"
+                ],
+                correct: [0, 1],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "地表水は大気と接触しているため、CO2が放出されて遊離炭酸が少なく、溶存酸素濃度が高い。地下水は地層を通過するため硬度が高く、地表水は細菌汚染を受けやすい。"
+            },
+            {
+                id: 17,
+                question: "水の浄化法の一般的な順序はどれか。１つ選べ。（元問17）",
+                options: [
+                    "消毒 → ろ過 → 沈殿",
+                    "ろ過 → 消毒 → 沈殿",
+                    "ろ過 → 沈殿 → 消毒",
+                    "沈殿 → ろ過 → 消毒",
+                    "沈殿 → 消毒 → ろ過"
+                ],
+                correct: [3],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "水道水の浄化処理は、凝集沈殿で大きな不純物を除去し、ろ過で残った微細な粒子を除去し、最後に消毒で病原体を殺菌する順序で行われる。"
+            },
+            {
+                id: 18,
+                question: "急速ろ過法における凝集剤として用いられるのはどれか。２つ選べ。（元問18）",
+                options: [
+                    "塩化ナトリウム",
+                    "酸化アルミニウム",
+                    "硫酸マンガン",
+                    "ポリ塩化アルミニウム",
+                    "トリエタノールアミン",
+                    "硫酸アルミニウム"
+                ],
+                correct: [3, 5],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "急速ろ過法では、ポリ塩化アルミニウム（PAC）と硫酸アルミニウム（アルミナ）が主要な凝集剤として使用される。これらは微細な粒子を凝集させて除去しやすくする。"
+            },
+            {
+                id: 19,
+                question: "学校の水道水の残留塩素を測定したところ，遊離残留塩素濃度は0.6mg/L，結合残留塩素濃度は0.2mg/Lであった。これに関する記述のうち，正しいのはどれか。１つ選べ。（元問19）",
+                options: [
+                    "結合残留塩素が基準を満たしているので，消毒は十分である。",
+                    "遊離残留塩素が基準を満たしているので，消毒は十分である。",
+                    "結合残留塩素が基準を満たしていないので，消毒は不十分である。",
+                    "遊離残留塩素が基準を満たしていないので，消毒は不十分である。",
+                    "遊離および結合残留塩素がともに基準を満たしていないので，消毒は不十分である。"
+                ],
+                correct: [1],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "水道水の残留塩素の基準は0.1mg/L以上で、より殺菌力の高い遊離残留塩素で評価される。遊離残留塩素0.6mg/Lは基準を満たしているので消毒は十分である。"
+            },
+            {
+                id: 20,
+                question: "塩素消毒に強い抵抗性を示す病原体はどれか。１つ選べ。（元問20）",
+                options: [
+                    "レジオネラ属菌",
+                    "大腸菌",
+                    "赤痢菌",
+                    "クリプトスポリジウム",
+                    "インフルエンザウイルス"
+                ],
+                correct: [3],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "クリプトスポリジウムは原虫の一種で、オーシストと呼ばれる厚い殻に包まれているため、塩素消毒に対して非常に強い抵抗性を示す。"
+            },
+            {
+                id: 21,
+                question: "塩素消毒の副生成物はどれか。１つ選べ。（元問22）",
+                options: [
+                    "クロロホルム",
+                    "ジクロロメタン",
+                    "四塩化炭素",
+                    "トリクロロエチレン",
+                    "テトラクロロエチレン"
+                ],
+                correct: [0],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "塩素消毒の際に、水中の有機物と塩素が反応してトリハロメタンが生成される。クロロホルムはその代表的な副生成物である。"
+            },
+            {
+                id: 22,
+                question: "水道水の大腸菌の試験法はどれか。１つ選べ。（元問23）",
+                options: [
+                    "標準寒天培地法",
+                    "モール法",
+                    "ジアゾ化法",
+                    "特定酵素基質培地法",
+                    "誘導結合プラズマ発光分光分析法"
+                ],
+                correct: [3],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "水道水の大腸菌検査には、大腸菌が持つ特定の酵素活性を利用した特定酵素基質培地法が用いられる。迅速で正確な検出が可能である。"
+            },
+            {
+                id: 23,
+                question: "下水に関する記述のうち，正しいのはどれか。２つ選べ。（元問24）",
+                options: [
+                    "下水は，生活もしくは事業に起因し，もしくは付随する廃水だけでなく，雨水も含まれる。",
+                    "大都市と中小都市の間に，下水道処理人口普及率の大きな差はない。",
+                    "下水道の普及により，単独浄化槽は年々増加している。",
+                    "分流式下水道は，合流式下水道に比べて水害対策に適している。",
+                    "我が国の多くの水域では，工業排水が水質汚濁の最大の要因となっている。"
+                ],
+                correct: [0, 3],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "下水道法では、下水は生活排水・事業排水・雨水を含む。分流式下水道は汚水と雨水を分離するため、水害時の処理場への負荷が少なく水害対策に適している。"
+            },
+            {
+                id: 24,
+                question: "人の健康の保護に関する環境基準の項目のうち，「検出されないこと」とされているのはどれか。２つ選べ。（元問27）",
+                options: [
+                    "カドミウム",
+                    "アルキル水銀",
+                    "クロム（6価）",
+                    "ヒ素",
+                    "PCB"
+                ],
+                correct: [1, 4],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "環境基準では、アルキル水銀とPCBについては毒性が極めて高いため「検出されないこと」とされている。その他の物質には具体的な数値基準が設定されている。"
+            },
+            {
+                id: 25,
+                question: "水質汚濁指標に関する記述のうち，正しいのはどれか。２つ選べ。（元問28）",
+                options: [
+                    "DOは，河川，湖沼および海域の汚濁指標である。",
+                    "CODは，河川の汚濁指標であり，BODは湖沼と海域の汚濁指標である。",
+                    "ノニルフェノールは，海域の油分による汚濁指標である。",
+                    "全窒素は，富栄養化による汚濁指標である。",
+                    "湖沼のCODの環境基準の達成率（2018年度）は，90%を超えている。"
+                ],
+                correct: [0, 3],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "DO（溶存酸素）は全ての水域の汚濁指標として用いられる。全窒素は富栄養化の指標として重要である。BODは河川、CODは湖沼・海域の指標として使い分けられる。"
+            },
+            {
+                id: 26,
+                question: "CODに関する記述のうち，正しいのはどれか。２つ選べ。（元問31）",
+                options: [
+                    "CODは，測定法によってその値が異なる。",
+                    "二クロム酸は，過マンガン酸より酸化力が強い。",
+                    "酸性高温過マンガン酸法では，還流による加熱操作が必要である。",
+                    "ニクロム酸法では，Cl⁻の妨害を防ぐためにAgSO₄を用いる。",
+                    "アルカリ性過マンガン酸法は，工場排水試験のJIS法に定められている。"
+                ],
+                correct: [0, 3],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "CODは測定法により値が異なり、ニクロム酸法では塩化物イオンの妨害を防ぐために硫酸銀を添加する。二クロム酸は過マンガン酸より酸化力が強い。"
+            },
+            {
+                id: 27,
+                question: "富栄養化に関する記述のうち，誤っているのはどれか。２つ選べ。（元問32）",
+                options: [
+                    "原因物質には，窒素とリンがある。",
+                    "湖沼・海域より河川で発生しやすい。",
+                    "アオコや赤潮の発生要因となる。",
+                    "魚類の異常繁殖が認められることがある。",
+                    "水質的に悪化した状態の水域をいう。"
+                ],
+                correct: [1, 3],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "富栄養化は流れの少ない湖沼・海域で起こりやすく、河川では流れがあるため発生しにくい。魚類の異常繁殖ではなく、植物プランクトンの異常繁殖が特徴的である。"
+            },
+            {
+                id: 28,
+                question: "大気汚染物質の測定法に関する記述のうち，正しいのはどれか。１つ選べ。（元問33）",
+                options: [
+                    "一酸化炭素は，ローボリュームエアサンプラーが用いられる。",
+                    "硫黄酸化物の測定には，過酸化水素溶液に試料空気を通じて，その導電率の上昇を測定する。",
+                    "浮遊粒子状物質は，中性ヨウ化カリウム溶液を酸化し，遊離するヨウ素を測定する。",
+                    "光化学オキシダントは，非分散型赤外線吸収装置を用いて測定する。"
+                ],
+                correct: [1],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "硫黄酸化物の測定には導電率法が用いられ、SO₂が過酸化水素溶液に吸収されて硫酸を生成し、導電率が上昇することを利用する。"
+            },
+            {
+                id: 29,
+                question: "光化学オキシダントに関する記述のうち，正しいのはどれか。２つ選べ。（元問35）",
+                options: [
+                    "オゾンやPAN（ペルオキシアシルナイトレート）は，光化学オキシダントに含まれる。",
+                    "光化学オキシダントは，自動車の排気ガスに含まれる一次汚染物質である。",
+                    "光化学オキシダントの発生には，大気中の窒素酸化物が関与している。",
+                    "光化学オキシダントの発生量は，オゾン層の破壊より減少している。",
+                    "環境基準達成率は，ほぼ100%である。"
+                ],
+                correct: [0, 2],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "光化学オキシダントにはオゾンやPANが含まれる。これらは窒素酸化物と炭化水素が太陽光により反応して生成される二次汚染物質である。"
+            },
+            {
+                id: 30,
+                question: "大気中に浮遊する粒子状物質に関する記述のうち，正しいのはどれか。２つ選べ。（元問36）",
+                options: [
+                    "浮遊粒子状物質とは，大気中に浮遊する粒子状物質のうち100μm以下の粒子をいう。",
+                    "微小粒子状物質とは，大気中に浮遊する粒子状物質のうち10μm以下の粒子をいう。",
+                    "微小粒子状物質は，主に肺胞に蓄積することが知られている。",
+                    "微小粒子状物質は，気管支ぜん息やアレルギー疾患の原因となる。",
+                    "近年の環境基準達成率は，極めて低い水準にある。"
+                ],
+                correct: [2, 3],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "浮遊粒子状物質は10μm以下、微小粒子状物質（PM2.5）は2.5μm以下の粒子である。PM2.5は肺胞まで到達し、喘息やアレルギー疾患の原因となる。"
+            },
+            {
+                id: 31,
+                question: "逆転層が発生すると思われる気象条件はどれか。１つ選べ。（元問37）",
+                options: [
+                    "夏，空気が上昇して積乱雲が発生し，突然，激しい雨が降った。",
+                    "夏の日の午後，大都市郊外で気温が30°C以上に上昇した。",
+                    "冬の日没に快晴となり，その後，無風になった。",
+                    "冬の朝，強い北風が吹いて気温が急速に低下した。"
+                ],
+                correct: [2],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "逆転層は冬の夜間に快晴・無風の条件で発生しやすい。地表面の放射冷却により上空より地表付近の気温が低くなり、大気汚染物質が拡散しにくくなる。"
+            },
+            {
+                id: 32,
+                question: "室内環境に関する記述のうち，正しいのはどれか。２つ選べ。（元問38）",
+                options: [
+                    "我が国では，気湿は絶対湿度で表す。",
+                    "気温，気動および気湿は温度感覚に影響を与える。",
+                    "カタ冷却力とは室温に等しいカタ温度計の示度において，その周囲の空気による冷却力をいう。",
+                    "試料空気と同一の温度感を与える，静止した飽和湿空気温度を感覚温度という。"
+                ],
+                correct: [1, 2],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "気温・気動（気流）・気湿は温度感覚に影響する要因である。カタ冷却力は38°Cから35°Cまでの冷却時間で測定される空気の冷却力である。"
+            },
+            {
+                id: 33,
+                question: "室内環境に関する記述のうち，正しいのはどれか。２つ選べ。（元問39）",
+                options: [
+                    "アスマン通風乾湿計において，乾球温度と湿球温度が同じ室内では，相対湿度が0％である。",
+                    "気動は，アスマン通風乾湿計および黒球温度計を用いて求める。",
+                    "カタ係数が同じ乾カタ温度計を用いた場合，38℃から35℃まで降下するのに要する時間が短いほど，乾カタ冷却力は大きい。",
+                    "気温と気湿が同じ室内では，気動が大きいほど乾カタ冷却力は小さい。",
+                    "室温20°Cで気動が一定の室内では，気湿が低いほど感覚温度は低い。"
+                ],
+                correct: [2, 4],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "カタ冷却力は冷却時間が短いほど大きく、気湿が低いほど感覚温度は低くなる。乾湿球温度が同じ場合は相対湿度100％である。"
+            },
+            {
+                id: 34,
+                question: "室内空気汚染に関する記述のうち，正しいのはどれか。１つ選べ。（元問40）",
+                options: [
+                    "シックハウス症候群の主な症状は，激しい腹痛である。",
+                    "シックハウス症候群への対策として，人が居住する建物には換気扇を設置して強制換気することが義務付けられている。",
+                    "フタル酸ジ-2-エチルヘキシルは，居室への使用は禁止されている。",
+                    "室内濃度指針値は，室内空気汚染物質によりシックハウス症候群が引き起こされる閾値を指標とした規制基準である。"
+                ],
+                correct: [2],
+                type: "single",
+                requiredSelections: 1,
+                explanation: "フタル酸ジ-2-エチルヘキシルは内分泌攪乱作用があるため、居室での使用が禁止されている。シックハウス症候群の症状は主に目やのどの刺激、頭痛などである。"
+            },
+            {
+                id: 35,
+                question: "喫煙に関する記述のうち，誤っているのはどれか。２つ選べ。（元問41）",
+                options: [
+                    "喫煙時の発がん物質の発生量は，主流煙に比べ副流煙で著しく高い。",
+                    "たばこにはニトロソアミンやカドミウムが含まれるが，煙には含まれない。",
+                    "喫煙と呼吸器障害やがんの発症との関連性は，医学的に明らかになっていない。",
+                    "健康増進法では，喫煙可能な場所には「喫煙可能場所」である旨の掲示を義務付けている。",
+                    "健康増進法では，学校・病院等には原則敷地内禁煙が義務づけられている。"
+                ],
+                correct: [1, 2],
+                type: "multiple",
+                requiredSelections: 2,
+                explanation: "たばこの有害物質は煙にも含まれ、喫煙と疾病の関連性は医学的に確立されている。副流煙の方が主流煙より発がん物質の濃度が高い。"
+            }
+        ];
+
+        // 変数
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let answeredQuestions = new Set();
+        let score = 0;
+        let showingResults = false;
+
+        // 初期化
+        function init() {
+            document.getElementById('totalQuestions').textContent = `総問題数: ${questions.length}`;
+            displayQuestion();
+            updateProgressBar();
+        }
+
+        // 問題表示
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            const quizContent = document.getElementById('quiz-content');
+            const isAnswered = answeredQuestions.has(question.id);
+            
+            let optionsHTML = '';
+            const inputType = question.type === 'single' ? 'radio' : 'checkbox';
+            
+            question.options.forEach((option, index) => {
+                const isSelected = userAnswers[question.id] && userAnswers[question.id].includes(index);
+                let optionClass = 'option';
+                
+                if (isSelected) {
+                    optionClass += ' selected';
+                }
+                
+                if (isAnswered) {
+                    if (question.correct.includes(index)) {
+                        optionClass += ' correct';
+                    } else if (isSelected) {
+                        optionClass += ' incorrect';
+                    }
+                }
+                
+                optionsHTML += `
+                    <div class="${optionClass}" onclick="selectOption(${question.id}, ${index})">
+                        <input type="${inputType}" name="q${question.id}" value="${index}" ${isSelected ? 'checked' : ''} onchange="event.stopPropagation();">
+                        <span class="option-text">${index + 1}. ${option}</span>
+                    </div>
+                `;
+            });
+            
+            let selectionInfo = '';
+            if (question.type === 'multiple') {
+                const currentSelections = userAnswers[question.id] ? userAnswers[question.id].length : 0;
+                selectionInfo = `<div class="selection-info">選択状況: ${currentSelections} / ${question.requiredSelections} 選択済み</div>`;
+            }
+            
+            quizContent.innerHTML = `
+                <div class="question-card">
+                    <div class="question-number">問 ${question.id}</div>
+                    <div class="question-text">${question.question}</div>
+                    ${selectionInfo}
+                    <div class="options">
+                        ${optionsHTML}
+                    </div>
+                    ${isAnswered ? `
+                        <div class="explanation">
+                            <h4>解説</h4>
+                            ${question.explanation}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // ナビゲーション更新
+            document.getElementById('questionCounter').textContent = `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').textContent = currentQuestionIndex === questions.length - 1 ? '結果表示' : '次の問題';
+            
+            updateProgressBar();
+        }
+
+        // 選択肢選択
+        function selectOption(questionId, optionIndex) {
+            const question = questions.find(q => q.id === questionId);
+            
+            // 既に回答済みの問題は変更不可
+            if (answeredQuestions.has(questionId)) {
+                return;
+            }
+            
+            if (!userAnswers[questionId]) {
+                userAnswers[questionId] = [];
+            }
+            
+            if (question.type === 'single') {
+                userAnswers[questionId] = [optionIndex];
+                // 単一選択の場合は即座にチェック
+                checkAnswer(questionId);
+            } else {
+                // 複数選択の場合
+                if (userAnswers[questionId].includes(optionIndex)) {
+                    userAnswers[questionId] = userAnswers[questionId].filter(i => i !== optionIndex);
+                } else {
+                    userAnswers[questionId].push(optionIndex);
+                }
+                
+                // 必要な選択数に達した場合のみチェック
+                if (userAnswers[questionId].length === question.requiredSelections) {
+                    checkAnswer(questionId);
+                }
+            }
+            
+            displayQuestion();
+            updateScore();
+        }
+
+        // 答えチェック
+        function checkAnswer(questionId) {
+            const question = questions.find(q => q.id === questionId);
+            const userAnswer = userAnswers[questionId] || [];
+            
+            // 複数選択の場合、必要な選択数に達していない場合は何もしない
+            if (question.type === 'multiple' && userAnswer.length !== question.requiredSelections) {
+                return;
+            }
+            
+            // 回答済みとしてマーク
+            answeredQuestions.add(questionId);
+        }
+
+        // スコア更新
+        function updateScore() {
+            score = 0;
+            questions.forEach(question => {
+                if (answeredQuestions.has(question.id)) {
+                    const userAnswer = userAnswers[question.id].sort();
+                    const correctAnswer = question.correct.sort();
+                    if (userAnswer.toString() === correctAnswer.toString()) {
+                        score++;
+                    }
+                }
+            });
+            
+            document.getElementById('currentScore').textContent = `正解数: ${score}`;
+        }
+
+        // 進捗バー更新
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        // 次の問題
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // 前の問題
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        }
+
+        // 結果表示
+        function showResults() {
+            const percentage = Math.round((score / questions.length) * 100);
+            let feedback = '';
+            
+            if (percentage >= 90) {
+                feedback = '素晴らしい！環境科学の知識が十分に身についています。';
+            } else if (percentage >= 80) {
+                feedback = '良い結果です！基本的な理解ができています。';
+            } else if (percentage >= 60) {
+                feedback = '基礎はできています。さらに学習を続けましょう。';
+            } else {
+                feedback = '復習が必要です。基本的な概念を確認してください。';
+            }
+            
+            document.getElementById('quiz-content').innerHTML = `
+                <div class="results-summary">
+                    <h3>2023年度 演習結果</h3>
+                    <div class="score">${score} / ${questions.length}</div>
+                    <div style="font-size: 1.5em; color: #3498db; margin: 20px 0;">${percentage}%</div>
+                    <div class="feedback">${feedback}</div>
+                    <button class="btn btn-primary" onclick="restartQuiz()" style="margin-top: 30px;">もう一度挑戦</button>
+                </div>
+            `;
+            
+            document.querySelector('.navigation').style.display = 'none';
+        }
+
+        // クイズ再開
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            answeredQuestions = new Set();
+            score = 0;
+            showingResults = false;
+            document.querySelector('.navigation').style.display = 'flex';
+            init();
+        }
+
+        // 初期化実行
+        init();
+    </script>
+</body>
+</html>
