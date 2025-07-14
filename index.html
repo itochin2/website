@@ -26,7 +26,7 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            max-width: 900px;
+            max-width: 1200px;
             width: 100%;
             animation: fadeInUp 0.6s ease-out;
         }
@@ -63,7 +63,7 @@
 
         .quiz-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
         }
@@ -202,6 +202,27 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 30px 0 20px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
     </style>
 </head>
 <body>
@@ -209,6 +230,7 @@
         <h1>生活環境と健康</h1>
         <p class="subtitle">確認問題演習 - 環境保健学習システム</p>
         
+        <div class="section-title">📚 分野別学習</div>
         <div class="quiz-grid">
             <a href="no17.html" class="quiz-card">
                 <div class="quiz-number">16-17</div>
@@ -266,10 +288,46 @@
             </a>
         </div>
 
+        <div class="section-title">📝 年度別・総合演習</div>
+        <div class="quiz-grid">
+            <a href="2023.html" class="quiz-card">
+                <div class="quiz-number">2023</div>
+                <div class="quiz-title">📚 2023年度版</div>
+                <div class="quiz-subtitle">Past Questions 2023</div>
+                <div class="quiz-description">
+                    2023年度の生活環境と健康に関する総合演習問題。環境科学の基本から応用まで幅広く学習できます。
+                </div>
+                <div class="question-count">35問</div>
+                <button class="start-button">学習開始</button>
+            </a>
+
+            <a href="2024.html" class="quiz-card">
+                <div class="quiz-number">2024</div>
+                <div class="quiz-title">📚 2024年度版</div>
+                <div class="quiz-subtitle">Past Questions 2024</div>
+                <div class="quiz-description">
+                    2024年度の生活環境と健康に関する総合演習問題。最新の環境基準や法規制について学習できます。
+                </div>
+                <div class="question-count">40問</div>
+                <button class="start-button">学習開始</button>
+            </a>
+
+            <a href="no14.html" class="quiz-card">
+                <div class="quiz-number">14</div>
+                <div class="quiz-title">📝 第14回確認問題</div>
+                <div class="quiz-subtitle">Review Questions #14</div>
+                <div class="quiz-description">
+                    7月21日（月）実施の第14回確認問題。生態系から廃棄物管理まで環境科学の総合的な理解を確認します。
+                </div>
+                <div class="question-count">50問</div>
+                <button class="start-button">学習開始</button>
+            </a>
+        </div>
+
         <div class="footer">
-            <p>📚 全5分野の○×問題で知識を確認し、AI解説で理解を深めましょう</p>
+            <p>📚 全8分野の問題で知識を確認し、詳細な解説で理解を深めましょう</p>
             <p>🔄 問題はランダムに出題され、何度でも挑戦できます</p>
-            <p>📊 総問題数：134問 | 地球環境40問 + 水環境40問 + 大気環境20問 + 室内環境18問 + 廃棄物16問</p>
+            <p>📊 総問題数：299問 | 地球環境40問 + 水環境40問 + 大気環境20問 + 室内環境18問 + 廃棄物16問 + 2023年度35問 + 2024年度40問 + 第14回50問</p>
         </div>
     </div>
 
@@ -308,7 +366,7 @@
                     card.style.transition = 'all 0.6s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
-                }, index * 200);
+                }, index * 100);
             });
         });
     </script>
