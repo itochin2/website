@@ -26,12 +26,23 @@ const quizList = [
     },
     {
         id: 'peripheral-nervous-system2',
-        title: '👁 生理解剖学I 第11回 末梢神経',
-        description: '生理解剖学I 第11回 末梢神経 (配布用)  250701から出題されます。',
+        title: '👁生理解剖学I 第11回 感覚器① 皮膚と感覚',
+        description: '生理解剖学I 第11回 感覚器① (配布用) 250701から出題されます。',
         icon: '👁',
         difficulty: 'hard',
         questionCount: 32,
         file: 'peripheral-nervous-system2.js',
+        types: ['single', 'multiple', 'binary'],
+        category: '薬学・医学'
+    },
+    {
+        id: 'peripheral-nervous-system3',
+        title: '👁️生理解剖学I 第12回 感覚器② 特殊感覚',
+        description: '生理解剖学I 第12回 感覚器②(配布用) 250708から出題されます。',
+        icon: '👁️',
+        difficulty: 'hard',
+        questionCount: 31,
+        file: 'peripheral-nervous-system3.js',
         types: ['single', 'multiple', 'binary'],
         category: '薬学・医学'
     },
