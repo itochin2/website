@@ -3,17 +3,6 @@
 
 const quizList = [
     {
-        id: 'general-knowledge',
-        title: '一般知識クイズ',
-        description: 'さまざまな分野の基礎知識を問う総合問題です。歴史、地理、科学など幅広いジャンルから出題されます。',
-        icon: '🧠',
-        difficulty: 'medium',
-        questionCount: 12,
-        file: 'C:/Users/itoch/Downloads/general-knowledge.js',
-        types: ['single', 'multiple', 'binary'],
-        category: '総合'
-    },
-    {
         id: 'peripheral-nervous-system',
         title: '🧠 生理解剖学I 第10回 末梢神経',
         description: '生理解剖学I 第10回 末梢神経 (配布用)  250623から出題されます。',
