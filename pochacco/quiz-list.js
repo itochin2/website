@@ -60,7 +60,7 @@ const quizList = [
     {
         id: 'pharmaceutical-biology-system2',
         title: '🔬薬学生物学クイズ２',
-        description: '2025年度「薬学で学ぶ生物学」要点集からの予想問題２です。○×問題で基礎概念を確認！',
+        description: '2025年度「薬学で学ぶ生物学」要点集からの予想問題２です。○×問題',
         icon: '🔬',
         difficulty: 'hard',
         questionCount: 30,
