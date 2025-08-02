@@ -46,7 +46,17 @@ const quizList = [
         types: ['single', 'multiple', 'binary'],
         category: '薬学・医学'
     },
-
+    {
+        id: 'pharmaceutical-biology-system',
+        title: '🧬薬学生物学クイズ',
+        description: '2025年度「薬学で学ぶ生物学」要点集からの予想問題１です。',
+        icon: '🧬',
+        difficulty: 'hard',
+        questionCount: 34,
+        file: 'pharmaceutical-biology-system.js',
+        types: ['single', 'multiple', 'binary'],
+        category: '薬学・医学'
+    },
 ];
 
 /*
