@@ -68,6 +68,17 @@ const quizList = [
         types: ['binary'],
         category: '薬学・医学'
     },
+    {
+        id: 'pharmaceutical-biology-system3',
+        title: '🧪生物有機化学クイズ',
+        description: '有機化学と生化学の基礎から応用まで。分子構造と性質の関係を深く理解しよう！',
+        icon: '🧪',
+        difficulty: 'hard',
+        questionCount: 32,
+        file: 'pharmaceutical-biology-system3.js',
+        types: ['single', 'multiple', 'binary'],
+        category: '薬学・医学'
+    },
 ];
 
 /*
