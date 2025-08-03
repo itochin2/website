@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>薬学生物学クイズ４</title>
+    <link rel="stylesheet" href="quiz.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <div class="back-button">
+                <a href="index.html" class="back-link">← メイン画面に戻る</a>
+            </div>
+            <h1 class="quiz-title" id="quizTitle">🔬 薬学生物学クイズ４</h1>
+            <p class="quiz-subtitle" id="quizSubtitle">生物学の総合問題集 - 細胞から生態系まで幅広い知識を確認しよう！</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div id="quizContent">
+            <div class="loading">問題を読み込み中...</div>
+        </div>
+
+        <div class="controls">
+            <div class="score-display">
+                スコア: <span id="scoreDisplay">0</span> / <span id="totalQuestions">74</span>
+            </div>
+            <div>
+                <button class="btn" id="prevBtn" onclick="previousQuestion()" disabled>前の問題</button>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>次の問題</button>
+                <button class="btn btn-success" id="submitBtn" onclick="submitAnswer()" disabled>回答</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="pharmaceutical-biology-system4.js"></script>
+    <script src="simple-quiz.js"></script>
+</body>
+</html>
