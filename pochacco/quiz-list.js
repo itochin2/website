@@ -79,6 +79,18 @@ const quizList = [
         types: ['single', 'multiple', 'binary'],
         category: '薬学・医学'
     },
+    {
+        id: 'pharmaceutical-biology-system4',
+        title: '🔬薬学生物学クイズ４',
+        description: '生物学の総合問題集。細胞から生態系まで幅広い知識を○×問題で確認！',
+        icon: '🔬',
+        difficulty: 'hard',
+        questionCount: 74,
+        file: 'pharmaceutical-biology-system4.js',
+        types: ['binary'],
+        category: '薬学・医学'
+    },
+
 ];
 
 /*
